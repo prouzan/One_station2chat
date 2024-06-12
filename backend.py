@@ -5,7 +5,7 @@ from http import HTTPStatus
 import dashscope
 import openai
 from flask_cors import CORS
-
+import os
 app = Flask(__name__)
 online_module_name = {"online_module_name": []}
 online_module = []
@@ -37,15 +37,22 @@ current_response = []
 
 class ChatFileManager():
     def __init__(self):
-        self.path = "/" #end with /
+        self.path = os.path.dirname(os.path.abspath(__file__)) + "\\"
 
-    def write_list_to_disk(self):
-        with open(self.path + online_module_name["online_module_name"][current_module_no], 'w') as file:
-            json.dump(current_chat_list, file, indent=4)
+    def write_list_to_disk(self):   
+        global current_chat_list
+        global online_module_name
+        try:
+            with open(self.path + online_module_name["online_module_name"][current_module_no] + ".dat", 'w') as file:
+                file.write(json.dumps(current_chat_list))
+                print("Write Back Success To" + self.path + online_module_name["online_module_name"][current_module_no])
+        except IOError as e:
+            print(f"An IOError occurred: {e}")
 
     # 从文件中读取列表
     def read_list_from_file(self,module_no):
-        with open(self.path + online_module_name["online_module_name"][module_no], 'r') as file:
+        global current_chat_list
+        with open(self.path + online_module_name["online_module_name"][module_no] + ".dat", 'r') as file:
             current_chat_list = json.load(file)
 
 class WenXinYiYan():
@@ -144,6 +151,7 @@ def get_online_module_name():
 @app.route('/change_current_module', methods=['POST'])
 def change_current_module():
     data = request.json
+    global local_chat_file_manager
     if "current_module_no" in data:
         if data["current_module_no"] == "0" or "1" or "2" or "3":
             local_chat_file_manager.write_list_to_disk()
@@ -231,6 +239,53 @@ def Choose_answer():
         return "choose success"
     return "choose failed"
 #{"choice" : "0"}
+
+@app.route('/new_chat', methods=['POST'])
+def new_chat():
+    data = request.json
+    current_chat_list.append({"chat_name":"new_chat","message":[]})
+    return "ok"
+
+@app.route('/delete_chat', methods=['POST'])
+def delete_chat():
+    global current_chat_no
+    data = request.json
+    if int(data["chat_no"]) >= len(current_chat_list):
+        return "error"
+    if current_chat_no > int(data["chat_no"]):
+        current_chat_no = current_chat_no - 1
+    elif current_chat_no == int(data["chat_no"]):
+        current_chat_no = 0
+    del(current_chat_list[int(data["chat_no"])])
+    return "ok"
+#{
+#    "chat_no":"1"
+#}
+
+@app.route('/modify_chat_name', methods=['POST'])
+def modify_chat_name():
+    data = request.json
+    if int(data["chat_no"]) >= len(current_chat_list):
+        return "error"
+    current_chat_list[int(data["chat_no"])]["chat_name"] = data["chat_name"]
+    return "ok"
+#{
+#    "chat_no":"1"
+#    "chat_name":""
+#}
+
+@app.route('/modify_chat_content', methods=['POST'])
+def modify_chat_content():
+    data = request.json
+    if int(data["chat_no"]) >= len(current_chat_list):
+        return "error"
+    current_chat_list[int(data["chat_no"])]["message"] = data["message"]
+    return "ok"
+#{
+#    "chat_no":"1"
+#    "message": [{"role":"","content":""}]
+#}
+
 local_Wen = WenXinYiYan()
 online_module_name["online_module_name"].append("文心一言")
 online_module.append(local_Wen)
