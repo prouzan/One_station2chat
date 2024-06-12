@@ -7,6 +7,78 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <script>
+        function display_online_module() {
+            var online_module_name; 
+            fetch('http://172.20.92.17:18081/get_online_module_name', {
+            method: 'GET', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+            headers: {
+                'Content-Type': 'application/json',
+                // 根据需要添加其他headers
+            },
+            // 如果是POST请求，可能需要添加请求体
+            // body: JSON.stringify({ key: 'value' })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 处理返回的数据
+                online_module_name = data.online_module_name;
+                console.log(online_module_name);
+                console.log("2");
+                // 获取sidebar-section1元素的引用
+                var sidebarSection1 = document.querySelector('.sidebar-section1');
+                var titleElement = sidebarSection1.querySelector('h2');
+                var firstModelBox = titleElement.nextElementSibling;
+
+                // 清空sidebar-section1中现有的内容
+                while (firstModelBox) {
+                    var nextElement = firstModelBox.nextElementSibling;
+                    sidebarSection1.removeChild(firstModelBox);
+                    firstModelBox = nextElement;
+                }
+                console.log("3");
+                // 检查online_module_name是否已经定义并且是一个数组
+                console.log(Array.isArray(online_module_name));
+                if (Array.isArray(online_module_name)) {
+                    // 遍历online_module_name数组
+                    console.log("4");
+                    online_module_name.forEach(function(name, index) {
+                        // 创建一个新的model-box元素
+                        console.log("1");
+                        var modelBox = document.createElement('div');
+                        modelBox.classList.add('model-box');
+
+                        //var m_button = document.createElement('button');
+                        //m_button.textContent = name;
+                        // 将标题和按钮添加到model-box中
+                        //modelBox.appendChild(m_button);
+
+                        var title = document.createElement('h2');
+                        title.textContent = name;
+                        modelBox.appendChild(title);
+
+                        modelBox.addEventListener('click', function() {
+                            // 切换背景颜色
+                            this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';
+                        });
+
+                        // 将model-box添加到sidebar-section1中
+                        sidebarSection1.appendChild(modelBox);
+                    });
+            }
+                // 这里可以调用函数来更新页面或执行其他逻辑
+            })
+            .catch(error => {
+                // 处理请求错误
+                console.error('Fetch error:', error);
+            });
+        }
+    </script>
     <div class="container">
         <aside class="sidebar">
             <div class="sidebar-section1">
@@ -32,6 +104,9 @@
             </section>
         </main>
     </div>
+<script>
+    display_online_module()
+</script>
     <script src="scripts.js"></script>
 </body>
 </html>

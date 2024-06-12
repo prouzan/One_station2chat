@@ -35,6 +35,7 @@ document.getElementById('send-button').addEventListener('click', function() {
         // });
     }
 });
+/*
 
 document.getElementById('add-model').addEventListener('click', function() {
     const modelSection = document.getElementById('model-section');
@@ -61,7 +62,7 @@ document.getElementById('add-model').addEventListener('click', function() {
     modelBox.appendChild(modelInput);
     modelBox.appendChild(editButton);
     modelSection.appendChild(modelBox);
-});
+});*/
 
 document.getElementById('add-conversation').addEventListener('click', function() {
     alert('新建对话模块功能待实现');

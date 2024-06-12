@@ -4,6 +4,8 @@ import json
 from http import HTTPStatus
 import dashscope
 import openai
+from flask_cors import CORS
+
 app = Flask(__name__)
 online_module_name = {"online_module_name": []}
 online_module = []
@@ -240,5 +242,6 @@ online_module_name["online_module_name"].append("Chat-GPT 3.5")
 online_module.append(local_Tong)
 local_chat_file_manager = ChatFileManager()
 if __name__ == "__main__":
+    CORS(app)
     app.run(host='0.0.0.0', port=18081)
 
