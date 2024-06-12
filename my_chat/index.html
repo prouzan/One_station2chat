@@ -10,7 +10,7 @@
     <script>
         function display_online_module() {
             var online_module_name; 
-            fetch('http://172.20.92.17:18081/get_online_module_name', {
+            fetch('http://172.20.188.100:18081/get_online_module_name', {
             method: 'GET', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
             headers: {
                 'Content-Type': 'application/json',
@@ -47,6 +47,7 @@
                 if (Array.isArray(online_module_name)) {
                     // 遍历online_module_name数组
                     console.log("4");
+                    var modelBoxes = [];
                     online_module_name.forEach(function(name, index) {
                         // 创建一个新的model-box元素
                         console.log("1");
@@ -64,11 +65,29 @@
 
                         modelBox.addEventListener('click', function() {
                             // 切换背景颜色
+                            modelBoxes.forEach(function(box) {
+                                box.style.backgroundColor = '';
+                            });
                             this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';
+                            fetch('http://172.20.188.100:18081/change_current_module', {
+                                method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    // 根据需要添加其他headers
+                                },
+                                body: JSON.stringify({ current_module_no: '0' })//应该修改为第几个按键
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
                         });
 
                         // 将model-box添加到sidebar-section1中
                         sidebarSection1.appendChild(modelBox);
+                        modelBoxes.push(modelBox);
                     });
             }
                 // 这里可以调用函数来更新页面或执行其他逻辑

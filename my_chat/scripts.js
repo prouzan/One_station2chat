@@ -63,9 +63,71 @@ document.getElementById('add-model').addEventListener('click', function() {
     modelBox.appendChild(editButton);
     modelSection.appendChild(modelBox);
 });*/
-
+var chatBoxes = document.querySelectorAll('.chat-box');
 document.getElementById('add-conversation').addEventListener('click', function() {
-    alert('新建对话模块功能待实现');
+    // 创建一个新的对话框元素
+    
+    fetch('http://172.20.188.100:18081/new_chat', {
+        method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+        headers: {
+            'Content-Type': 'application/json',
+            // 根据需要添加其他headers
+        },
+        body: JSON.stringify({ chat_no: '0' })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+        })
+    var newChatBox = document.createElement('div');
+    newChatBox.classList.add('chat-box');
+    
+    // 添加标题
+    var title = document.createElement('botton');
+    title.textContent = 'new_chat'; //TODO:放置对话内容节选
+    newChatBox.appendChild(title);
+    
+    title.addEventListener('click', function() {
+        chatBoxes.forEach(function(box) {
+            box.style.backgroundColor = '';
+            // 如果 box 包含标题按钮，则也重置标题按钮的背景颜色
+            var titleButton = box.querySelector('botton');
+            if (titleButton) {
+                console.log("has title")
+                titleButton.style.backgroundColor = '';
+            }
+        });
+        this.style.backgroundColor = 'gray';
+        newChatBox.style.backgroundColor = 'gray';
+    });
+
+    // 添加关闭按钮
+    var closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+
+    closeButton.addEventListener('click', function() {
+        newChatBox.remove(); 
+        fetch('http://172.20.188.100:18081/delete_chat', {
+            method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+            headers: {
+                'Content-Type': 'application/json',
+                // 根据需要添加其他headers
+            },
+            body: JSON.stringify({ chat_no: '0' })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+    });
+    title.appendChild(closeButton);
+    
+    // 获取 <div class="sidebar-section2"> 元素并将新建的对话框添加为其子元素
+    var sidebarSection2 = document.querySelector('.sidebar-section2');
+    sidebarSection2.appendChild(newChatBox);
+    chatBoxes = document.querySelectorAll('.chat-box');
 });
 
 
