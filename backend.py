@@ -167,11 +167,13 @@ def change_current_module():
     data = request.json
     global local_chat_file_manager
     global current_module_no
+    global current_chat_no
     if "current_module_no" in data:
         if data["current_module_no"] == "0" or "1" or "2" or "3":      
             local_chat_file_manager.write_list_to_disk()
             local_chat_file_manager.read_list_from_file(int(data["current_module_no"]))
             current_module_no = int(data["current_module_no"])
+            current_chat_no = 0
             return {"current_chat_list": current_chat_list}
     return "find error in body"
 '''{

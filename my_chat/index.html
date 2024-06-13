@@ -76,7 +76,7 @@
                                     'Content-Type': 'application/json',
                                     // 根据需要添加其他headers
                                 },
-                                body: JSON.stringify({ current_module_no: String(index) })//应该修改为第几个按键
+                                body: JSON.stringify({ current_module_no: String(index) })
                                 })
                                 .then(response => {
                                     if (!response.ok) {
