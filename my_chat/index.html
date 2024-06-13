@@ -10,7 +10,7 @@
     <script>
         function display_online_module() {
             var online_module_name; 
-            fetch('http://172.20.188.100:18081/get_online_module_name', {
+            fetch('http://127.0.0.1:18081/get_online_module_name', {
             method: 'GET', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
             headers: {
                 'Content-Type': 'application/json',
@@ -64,18 +64,19 @@
                         modelBox.appendChild(title);
 
                         modelBox.addEventListener('click', function() {
+                            var index = modelBoxes.indexOf(this);
                             // 切换背景颜色
                             modelBoxes.forEach(function(box) {
                                 box.style.backgroundColor = '';
                             });
                             this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';
-                            fetch('http://172.20.188.100:18081/change_current_module', {
+                            fetch('http://127.0.0.1:18081/change_current_module', {
                                 method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
                                 headers: {
                                     'Content-Type': 'application/json',
                                     // 根据需要添加其他headers
                                 },
-                                body: JSON.stringify({ current_module_no: '0' })//应该修改为第几个按键
+                                body: JSON.stringify({ current_module_no: String(index) })
                                 })
                                 .then(response => {
                                     if (!response.ok) {
