@@ -42,6 +42,8 @@ class ChatFileManager():
     def write_list_to_disk(self):   
         global current_chat_list
         global online_module_name
+        global current_module_no
+        print("write "+ str(current_module_no))
         try:
             with open(self.path + online_module_name["online_module_name"][current_module_no] + ".dat", 'w') as file:
                 file.write(json.dumps(current_chat_list))
@@ -52,8 +54,20 @@ class ChatFileManager():
     # 从文件中读取列表
     def read_list_from_file(self,module_no):
         global current_chat_list
-        with open(self.path + online_module_name["online_module_name"][module_no] + ".dat", 'r') as file:
-            current_chat_list = json.load(file)
+        try:
+            with open(self.path + online_module_name["online_module_name"][module_no] + ".dat", 'r') as file:
+                current_chat_list = json.load(file)
+        except FileNotFoundError:
+        # 如果文件不存在，设置 current_chat_list 为空列表
+            current_chat_list = []
+        except json.JSONDecodeError:
+            # 如果文件存在但内容不是有效的 JSON，也设置为空列表
+            current_chat_list = []
+        except Exception as e:
+            # 其他异常，打印错误信息
+            print(f"An unexpected error occurred: {e}")
+            # 可以选择再次设置为空列表，或者根据需要进行其他错误处理
+            current_chat_list = []
 
 class WenXinYiYan():
     def __init__(self):
@@ -152,8 +166,9 @@ def get_online_module_name():
 def change_current_module():
     data = request.json
     global local_chat_file_manager
+    global current_module_no
     if "current_module_no" in data:
-        if data["current_module_no"] == "0" or "1" or "2" or "3":
+        if data["current_module_no"] == "0" or "1" or "2" or "3":      
             local_chat_file_manager.write_list_to_disk()
             local_chat_file_manager.read_list_from_file(int(data["current_module_no"]))
             current_module_no = int(data["current_module_no"])

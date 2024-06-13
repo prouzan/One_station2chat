@@ -67,7 +67,7 @@ var chatBoxes = document.querySelectorAll('.chat-box');
 document.getElementById('add-conversation').addEventListener('click', function() {
     // 创建一个新的对话框元素
     
-    fetch('http://172.20.188.100:18081/new_chat', {
+    fetch('http://127.0.0.1:18081/new_chat', {
         method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
         headers: {
             'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ document.getElementById('add-conversation').addEventListener('click', function()
 
     closeButton.addEventListener('click', function() {
         newChatBox.remove(); 
-        fetch('http://172.20.188.100:18081/delete_chat', {
+        fetch('http://127.0.0.1:18081/delete_chat', {
             method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
             headers: {
                 'Content-Type': 'application/json',
