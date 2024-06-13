@@ -82,13 +82,15 @@ document.getElementById('add-conversation').addEventListener('click', function()
         })
     var newChatBox = document.createElement('div');
     newChatBox.classList.add('chat-box');
-    
+    var chatBoxIndex = Array.from(document.querySelectorAll('.chat-box')).length;
+    newChatBox.dataset.index = chatBoxIndex;
     // 添加标题
     var title = document.createElement('botton');
     title.textContent = 'new_chat'; //TODO:放置对话内容节选
     newChatBox.appendChild(title);
     
     title.addEventListener('click', function() {
+        var clickedIndex = this.parentNode.dataset.index;
         chatBoxes.forEach(function(box) {
             box.style.backgroundColor = '';
             // 如果 box 包含标题按钮，则也重置标题按钮的背景颜色
@@ -100,26 +102,41 @@ document.getElementById('add-conversation').addEventListener('click', function()
         });
         this.style.backgroundColor = 'gray';
         newChatBox.style.backgroundColor = 'gray';
+        fetch('http://127.0.0.1:18081/change_current_chat', {
+            method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+            headers: {
+                'Content-Type': 'application/json',
+                // 根据需要添加其他headers
+            },
+            body: JSON.stringify({ current_chat_no: String(clickedIndex) })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
     });
 
     // 添加关闭按钮
     var closeButton = document.createElement('button');
     closeButton.textContent = '×';
-
+    
     closeButton.addEventListener('click', function() {
-        newChatBox.remove(); 
+        var closedIndex = this.parentNode.parentNode.dataset.index;
+        console.log(this.parentNode.dataset.index);
         fetch('http://127.0.0.1:18081/delete_chat', {
             method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
             headers: {
                 'Content-Type': 'application/json',
                 // 根据需要添加其他headers
             },
-            body: JSON.stringify({ chat_no: '0' })
+            body: JSON.stringify({ chat_no: String(closedIndex) })
             })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
+            newChatBox.remove(); 
             })
     });
     title.appendChild(closeButton);

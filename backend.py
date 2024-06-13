@@ -182,6 +182,7 @@ def change_current_module():
 def change_current_chat():
     data = request.json
     if "current_chat_no" in data:
+        print(data["current_chat_no"])
         if int(data["current_chat_no"]) <= len(current_chat_list) - 1:
             current_chat_no = int(data["current_chat_no"])
             return current_chat_list[current_chat_no]##modify
@@ -265,6 +266,7 @@ def new_chat():
 def delete_chat():
     global current_chat_no
     data = request.json
+    print(data)
     if int(data["chat_no"]) >= len(current_chat_list):
         return "error"
     if current_chat_no > int(data["chat_no"]):
