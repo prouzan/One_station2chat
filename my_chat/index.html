@@ -35,6 +35,9 @@
                 var titleElement = sidebarSection1.querySelector('h2');
                 var firstModelBox = titleElement.nextElementSibling;
 
+                var sidebarSection2 = document.querySelector('.sidebar-section2');
+                var titleElement2 = sidebarSection2.querySelector('button');
+
                 // 清空sidebar-section1中现有的内容
                 while (firstModelBox) {
                     var nextElement = firstModelBox.nextElementSibling;
@@ -83,6 +86,19 @@
                                         throw new Error('Network response was not ok');
                                     }
                                     return response.json();
+                                }).then(data =>{
+                                        chat_data = data.current_chat_list;
+                                        // 清空sidebar-section2中现有的内容
+                                        var firstChatBox = titleElement2.nextElementSibling;
+                                        while (firstChatBox) {
+                                        var nextElement = firstChatBox.nextElementSibling;
+                                        sidebarSection2.removeChild(firstChatBox);
+                                        firstChatBox = nextElement;
+                                    }
+                                    console.log(chat_data);
+                                    chat_data.forEach(chat => {
+                                        createChatBoxes(chat.chat_name);
+                                    })
                                 })
                         });
 

@@ -141,23 +141,39 @@ body {
 }
 
 .chat-box {
+    display: flex;          /* 启用Flexbox布局 */
+    justify-content: space-between; /* 使按钮分布在容器两端 */
+    align-items: center;     /* 垂直居中对齐 */
     width: 80%;
     background-color: #6b5bb1;
     color: white;
     margin: 10px 0;
     padding: 10px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     border-radius: 4px;
+    position: relative; /* 使chat-box具有相对定位，以便绝对定位输入框 */
 }
 
 .chat-box h2{
     margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 10px;
     text-align: center;
-    font-size: 12px;
+    font-size: 16px;
     color: white;
+}
+
+.chat-box button{
+    border: none;
+    background-color: #6b5bb1;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0.1px 0.1px;
+    border-radius: 0.5px;
 }
 
 main {
