@@ -186,7 +186,7 @@ main {
 
 #chat-window {
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: white;
     padding: 10px;
     border: 1px solid #ddd;
@@ -204,11 +204,13 @@ main {
 }
 
 #user-input {
-    flex: 1;
+    max-width: auto; /* 设置最大宽度 */
+    width: 100%; /* 设置宽度为父容器宽度的100% */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    resize: vertical; /* 允许垂直调整大小 */
 }
 
 #send-button {
@@ -226,13 +228,45 @@ main {
 }
 
 .question {
-    margin-bottom: 20px;
+    background-color: #f0f0f0; 
+    padding: 10px;
+    border-radius: 8px;
+    max-width: auto; /* 调整宽度 */
+    height: auto; /* 根据内容自动调整高度 */
+    margin-bottom: 30px;
+    margin-left: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.answer {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: auto; /* 调整宽度 */
+    height: auto; /* 根据内容自动调整高度 */
+    margin-bottom: 30px;
+    margin-right: 50px;
+    display: flex;
+    flex-direction: row;
 }
 
 .question-text {
-    font-weight: bold;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: auto; /* 调整宽度 */
+    height: auto; /* 根据内容自动调整高度 */
+    margin-bottom: 10px;
+    max-width: auto;
 }
 
 .answer-text {
-    margin-left: 20px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: auto; /* 调整宽度 */
+    height: auto; /* 根据内容自动调整高度 */
+    max-width: auto;
 }
