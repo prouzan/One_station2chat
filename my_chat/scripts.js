@@ -3,7 +3,10 @@ document.getElementById('send-button').addEventListener('click', function() {
     if (userInput.trim() !== "") {
         const newQuestion = document.createElement('div');
         newQuestion.classList.add('question');
-        
+
+        const newAnswer = document.createElement('div');
+        newAnswer.classList.add('answer');
+
         const questionText = document.createElement('p');
         questionText.classList.add('question-text');
         questionText.textContent = userInput;
@@ -11,14 +14,33 @@ document.getElementById('send-button').addEventListener('click', function() {
         const answerText = document.createElement('p');
         answerText.classList.add('answer-text');
         answerText.textContent = "请稍等，正在处理中...";
-        
+
+        const avatar_a = document.createElement('img');
+        avatar_a.src = '../ai.jpg'; // 设置头像图片路径
+        avatar_a.style.width = '50px'; // 设置宽度为50像素
+        avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
+
+        const avatar_q = document.createElement('img');
+        avatar_q.src = '../human.jpg'; // 设置头像图片路径
+        avatar_q.style.width = '50px'; // 设置宽度为50像素
+        avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
+        avatar_q.style.alignSelf = 'flex-end';
+
         newQuestion.appendChild(questionText);
-        newQuestion.appendChild(answerText);
+        newQuestion.appendChild(avatar_q);
+        
+        newAnswer.appendChild(avatar_a);
+        newAnswer.appendChild(answerText);
         
         document.getElementById('chat-window').appendChild(newQuestion);
+        document.getElementById('chat-window').appendChild(newAnswer);
         
         document.getElementById('user-input').value = '';
-        
+
+        //自动滚动功能
+        var container1 = document.getElementById('chat-window');
+        container1.scrollTop = container1.scrollHeight;
+
         // Here you can add the functionality to send the question to the backend and get the answer
         // For example:
         // fetch('/api/getAnswer', {
@@ -254,9 +276,9 @@ function createChatBoxes(chatname) {
         });
         title.appendChild(closeButton);
 
-        // 添加关闭按钮
-        var chan_name_Button = document.createElement('button');
-        chan_name_Button.textContent = '×';
+        // // 添加关闭按钮
+        // var chan_name_Button = document.createElement('button');
+        // chan_name_Button.textContent = '×';
         newChatBox.appendChild(closeButton);
         // 获取 <div class="sidebar-section2"> 元素并将新建的对话框添加为其子元素
         var sidebarSection2 = document.querySelector('.sidebar-section2');
