@@ -98,13 +98,15 @@ class WenXinYiYan():
     
     def communicate(self, context):
         url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie_speed?access_token=" + self.access_token
-        payload = json.dumps(context)
+        payload = json.dumps({"messages": context})
+        print(payload)
         headers = {
             'Content-Type': 'application/json'
         }
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == HTTPStatus.OK:
             data = response.json()
+            print(data)
             print(data["result"])
             return data["result"]
         print("Wen communicate error")
@@ -127,6 +129,7 @@ class TongYiQianWen():
         dashscope.api_key = self.API_KEY
 
     def communicate(self, context):
+        print(context)
         response = dashscope.Generation.call(
             dashscope.Generation.Models.qwen_turbo,
             messages=context,
@@ -134,7 +137,6 @@ class TongYiQianWen():
         )
         if response.status_code == HTTPStatus.OK:
             data = response["output"]["choices"][0]["message"]["content"]
-            print(data)
             return data
         print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
             response.request_id, response.status_code,
@@ -211,30 +213,32 @@ def change_current_chat():
 @app.route('/Chat', methods=['POST'])
 def Chat():
     data = request.json
-    body = current_chat_list[current_chat_no]["message"]
+    body = list(current_chat_list[current_chat_no]["message"])
     body.append(data["message"])
-    if current_module_no == "0":
+    print(type(current_module_no))
+    print(current_module_no)
+    if current_module_no == 0:
         result = local_Wen.communicate(body)
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
             return result
         return "connection error"
-    elif current_module_no == "1":
+    elif current_module_no == 1:
         result = local_Tong.communicate(body)
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
             return result
         return "connection error"
-    elif current_module_no == "2":
+    elif current_module_no == 2:
         result = local_Gpt.communicate(body)
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
             return result
         return "connection error"
-    elif current_module_no == "3":
+    elif current_module_no == 3:
         results = {
             "messages": []
         }
@@ -256,7 +260,7 @@ def Chat():
         return "module not found"
 # {
 #     "message":{
-#         "role":"user",
+#         "role":"user"，
 #         "content":""
 #     }
 # }

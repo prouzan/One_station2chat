@@ -1,5 +1,21 @@
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
+    console.log(userInput);
+    fetch('http://127.0.0.1:18081/Chat', {
+    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+    headers: {
+        'Content-Type': 'application/json',
+        // 根据需要添加其他headers
+    },
+    body: JSON.stringify({ message: {role: 'user',content: userInput} })
+    })
+    .then(response => {
+        console.log(response.body.value);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+    })
+
     if (userInput.trim() !== "") {
         const newQuestion = document.createElement('div');
         newQuestion.classList.add('question');
@@ -104,29 +120,43 @@ document.getElementById('add-conversation').addEventListener('click', function()
         })
     createChatBoxes("new_chat");
 });
-
-
-
+/*
 document.getElementById('send-button').addEventListener('click', function() {
-    const userInput = document.getElementById('user-input').value;
-    if (userInput.trim() !== "") {
-        const newQuestion = document.createElement('div');
-        newQuestion.classList.add('question');
-        
-        const questionText = document.createElement('p');
-        questionText.classList.add('question-text');
-        questionText.textContent = userInput;
-        
-        const answerText = document.createElement('p');
-        answerText.classList.add('answer-text');
-        answerText.textContent = "请稍等，正在处理中...";
-        
-        newQuestion.appendChild(questionText);
-        newQuestion.appendChild(answerText);
-        
-        document.getElementById('chat-window').appendChild(newQuestion);
-        
-        document.getElementById('user-input').value = '';
+    var userInput = document.getElementById('user-input').value;
+    console.log(userInput);
+
+    const newQuestion = document.createElement('div');
+    newQuestion.classList.add('question');
+    
+    const questionText = document.createElement('p');
+    questionText.classList.add('question-text');
+    console.log(userInput);
+    questionText.textContent = userInput;
+    
+    const answerText = document.createElement('p');
+    answerText.classList.add('answer-text');
+    answerText.textContent = "请稍等，正在处理中...";
+    
+    newQuestion.appendChild(questionText);
+    newQuestion.appendChild(answerText);
+    
+    document.getElementById('chat-window').appendChild(newQuestion);
+    document.getElementById('user-input').value = '';    
+    
+    fetch('http://127.0.0.1:18081/Chat', {
+    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+    headers: {
+        'Content-Type': 'application/json',
+        // 根据需要添加其他headers
+    },
+    body: JSON.stringify({ message: {role: 'user',content: String(userInput)} })
+    })
+    .then(response => {
+        console.log(response.body.value);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+    })
         
         // Here you can add the functionality to send the question to the backend and get the answer
         // For example:
@@ -142,8 +172,7 @@ document.getElementById('send-button').addEventListener('click', function() {
         // }).catch(error => {
         //     answerText.textContent = "发生错误，请重试。";
         // });
-    }
-});
+});*/
 
 function createChatBoxes(chatname) {
         var newChatBox = document.createElement('div');
