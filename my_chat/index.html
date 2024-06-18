@@ -38,6 +38,8 @@
                 var sidebarSection2 = document.querySelector('.sidebar-section2');
                 var titleElement2 = sidebarSection2.querySelector('button');
 
+                var chat_window = document.querySelector('#chat-window');
+
                 // 清空sidebar-section1中现有的内容
                 while (firstModelBox) {
                     var nextElement = firstModelBox.nextElementSibling;
@@ -94,6 +96,13 @@
                                         var nextElement = firstChatBox.nextElementSibling;
                                         sidebarSection2.removeChild(firstChatBox);
                                         firstChatBox = nextElement;
+
+                                        var firstChatwinele = chat_window.firstChild;
+                                        while (firstChatwinele) {
+                                        var nextEle = firstChatwinele.nextElementSibling;
+                                        chat_window.removeChild(firstChatwinele);
+                                        firstChatwinele = nextEle;
+                                    }
                                     }
                                     console.log(chat_data);
                                     chat_data.forEach(chat => {

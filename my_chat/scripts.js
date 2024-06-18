@@ -227,6 +227,52 @@ function createChatBoxes(chatname) {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
+                    var chat_window = document.querySelector('#chat-window');
+                    var firstChatwinele = chat_window.firstChild;
+                    while (firstChatwinele) {
+                    var nextEle = firstChatwinele.nextElementSibling;
+                    chat_window.removeChild(firstChatwinele);
+                    firstChatwinele = nextEle;
+                }
+                return response.json();
+                })
+                .then(data=>{
+                    console.log(data.message);
+                    data.message.forEach(element => {  
+                        if (element.role == 'user')
+                        {
+                            const newQuestion = document.createElement('div');
+                            newQuestion.classList.add('question');
+                            const questionText = document.createElement('p');
+                            questionText.classList.add('question-text');
+                            questionText.textContent = element.content;
+                            const avatar_q = document.createElement('img');
+                            avatar_q.src = '../human.jpg'; // 设置头像图片路径
+                            avatar_q.style.width = '50px'; // 设置宽度为50像素
+                            avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
+                            avatar_q.style.alignSelf = 'flex-end';
+                            newQuestion.appendChild(questionText);
+                            newQuestion.appendChild(avatar_q);
+                            document.getElementById('chat-window').appendChild(newQuestion);
+                        }
+                        else
+                        {
+                            const newAnswer = document.createElement('div');
+                            newAnswer.classList.add('answer'); 
+                            const answerText = document.createElement('p');
+                            answerText.classList.add('answer-text');
+                            answerText.textContent = element.content;   
+                            const avatar_a = document.createElement('img');
+                            avatar_a.src = '../ai.jpg'; // 设置头像图片路径
+                            avatar_a.style.width = '50px'; // 设置宽度为50像素
+                            avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
+                            newAnswer.appendChild(avatar_a);
+                            newAnswer.appendChild(answerText);
+                            document.getElementById('chat-window').appendChild(newAnswer);
+                        }
+                        var container1 = document.getElementById('chat-window');
+                        container1.scrollTop = container1.scrollHeight;
+                    });
                 })
         });
     
