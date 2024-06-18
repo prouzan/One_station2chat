@@ -19,12 +19,12 @@ document.getElementById('send-button').addEventListener('click', function() {
         answerText.textContent = "请稍等，正在处理中...";
 
         const avatar_a = document.createElement('img');
-        avatar_a.src = '../ai.jpg'; // 设置头像图片路径
+        avatar_a.src = '../../ai.jpg'; // 设置头像图片路径
         avatar_a.style.width = '50px'; // 设置宽度为50像素
         avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
 
         const avatar_q = document.createElement('img');
-        avatar_q.src = '../human.jpg'; // 设置头像图片路径
+        avatar_q.src = '../../human.jpg'; // 设置头像图片路径
         avatar_q.style.width = '50px'; // 设置宽度为50像素
         avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
         avatar_q.style.alignSelf = 'flex-end';
@@ -247,7 +247,7 @@ function createChatBoxes(chatname) {
                             questionText.classList.add('question-text');
                             questionText.textContent = element.content;
                             const avatar_q = document.createElement('img');
-                            avatar_q.src = '../human.jpg'; // 设置头像图片路径
+                            avatar_q.src = '../../human.jpg'; // 设置头像图片路径
                             avatar_q.style.width = '50px'; // 设置宽度为50像素
                             avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
                             avatar_q.style.alignSelf = 'flex-end';
@@ -263,7 +263,7 @@ function createChatBoxes(chatname) {
                             answerText.classList.add('answer-text');
                             answerText.textContent = element.content;   
                             const avatar_a = document.createElement('img');
-                            avatar_a.src = '../ai.jpg'; // 设置头像图片路径
+                            avatar_a.src = '../../ai.jpg'; // 设置头像图片路径
                             avatar_a.style.width = '50px'; // 设置宽度为50像素
                             avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
                             newAnswer.appendChild(avatar_a);
