@@ -1,20 +1,7 @@
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     console.log(userInput);
-    fetch('http://127.0.0.1:18081/Chat', {
-    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-    headers: {
-        'Content-Type': 'application/json',
-        // 根据需要添加其他headers
-    },
-    body: JSON.stringify({ message: {role: 'user',content: userInput} })
-    })
-    .then(response => {
-        console.log(response.body.value);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-    })
+   
 
     if (userInput.trim() !== "") {
         const newQuestion = document.createElement('div');
@@ -57,9 +44,32 @@ document.getElementById('send-button').addEventListener('click', function() {
         var container1 = document.getElementById('chat-window');
         container1.scrollTop = container1.scrollHeight;
 
+
+        fetch('http://127.0.0.1:18081/Chat', {
+            method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+            headers: {
+                'Content-Type': 'application/json',
+                // 根据需要添加其他headers
+            },
+            body: JSON.stringify({ message: {role: 'user',content: userInput} })
+            })
+            .then(response => {
+                // console.log(response.body.value);
+                console.log(response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => {
+                    console.log(data);
+                    answerText.textContent = data.result;
+            }).catch(error => {
+                    answerText.textContent = "发生错误，请重试。"
+                })
+
         // Here you can add the functionality to send the question to the backend and get the answer
         // For example:
-        // fetch('/api/getAnswer', {
+        // fetch('http://172.0.0.1:18081/Chat', {
         //     method: 'POST',
         //     headers: {
         //         'Content-Type': 'application/json'
@@ -67,7 +77,9 @@ document.getElementById('send-button').addEventListener('click', function() {
         //     body: JSON.stringify({ question: userInput })
         // }).then(response => response.json())
         // .then(data => {
-        //     answerText.textContent = data.answer;
+        //     console.log(data);
+        //     answerText.textContent = data.result;
+        //     console.log(data.result);
         // }).catch(error => {
         //     answerText.textContent = "发生错误，请重试。";
         // });
@@ -286,7 +298,7 @@ function createChatBoxes(chatname) {
         closeButton.textContent = '×';
         
         closeButton.addEventListener('click', function() {
-            var closedIndex = this.parentNode.parentNode.dataset.index;
+            var closedIndex = this.parentNode.dataset.index;
             console.log(this.parentNode.dataset.index);
             fetch('http://127.0.0.1:18081/delete_chat', {
                 method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他

@@ -222,37 +222,37 @@ def Chat():
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
-            return result
+            return {"result": result}
         return "connection error"
     elif current_module_no == 1:
         result = local_Tong.communicate(body)
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
-            return result
+            return {"result": result}
         return "connection error"
     elif current_module_no == 2:
         result = local_Gpt.communicate(body)
         if result:
             current_chat_list[current_chat_no]["message"].append(data["message"])
             current_chat_list[current_chat_no]["message"].append({"role": "assistant","content": result})
-            return result
+            return {"result": result}
         return "connection error"
     elif current_module_no == 3:
         results = {
-            "messages": []
+            "result": []
         }
         result = local_Gpt.communicate(body)
         if result:
-            results["messages"].append(result)
+            results["result"].append(result)
             current_response.append({"role":"assistant","content": result})
         result = local_Tong.communicate(body)
         if result:
-            results["messages"].append(result)
+            results["result"].append(result)
             current_response.append({"role":"assistant","content": result})
         result = local_Wen.communicate(body)
         if result:
-            results["messages"].append(result)
+            results["result"].append(result)
             current_response.append({"role":"assistant","content": result})
         current_ask.append(body)
         return results
