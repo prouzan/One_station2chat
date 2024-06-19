@@ -231,42 +231,43 @@ main {
     background-color: #f0f0f0; 
     padding: 10px;
     border-radius: 8px;
-    max-width: auto; /* 调整宽度 */
+    width:auto;
     height: auto; /* 根据内容自动调整高度 */
     margin-bottom: 30px;
     margin-left: 50px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: row-reverse;
+    align-content:flex-start;
 }
 
 .answer {
     background-color: #f0f0f0;
     padding: 10px;
     border-radius: 8px;
-    max-width: auto; /* 调整宽度 */
+    width: auto;
     height: auto; /* 根据内容自动调整高度 */
     margin-bottom: 30px;
     margin-right: 50px;
     display: flex;
     flex-direction: row;
+    align-content:flex-start;
 }
 
 .question-text {
-    background-color: #f0f0f0;
+    background-color: #f7e5e5;
     padding: 10px;
     border-radius: 8px;
-    max-width: auto; /* 调整宽度 */
     height: auto; /* 根据内容自动调整高度 */
+    width: auto;
     margin-bottom: 10px;
-    max-width: auto;
+    white-space: pre-wrap;
 }
 
 .answer-text {
     background-color: #e0e0e0;
     padding: 10px;
     border-radius: 8px;
-    max-width: auto; /* 调整宽度 */
     height: auto; /* 根据内容自动调整高度 */
-    max-width: auto;
+    width: auto;
+    white-space: pre-wrap;
 }
