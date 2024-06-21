@@ -19,12 +19,14 @@ document.getElementById('send-button').addEventListener('click', function() {
         answerText.textContent = "请稍等，正在处理中...";
 
         const avatar_a = document.createElement('img');
-        avatar_a.src = '../../ai.jpg'; // 设置头像图片路径
+        //avatar_a.src = "{{ url_for('static', filename='images/ai.jpg') }}"; // 设置头像图片路径
+        avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
         avatar_a.style.width = '50px'; // 设置宽度为50像素
         avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
 
         const avatar_q = document.createElement('img');
-        avatar_q.src = '../../human.jpg'; // 设置头像图片路径
+        //avatar_q.src = "{{ url_for('static', filename='images/human.jpg') }}"; // 设置头像图片路径
+        avatar_q.src = 'static/images/human.jpg';
         avatar_q.style.width = '50px'; // 设置宽度为50像素
         avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
         
@@ -76,52 +78,9 @@ document.getElementById('send-button').addEventListener('click', function() {
                     answerText.textContent = "发生错误，请重试。"
                 })
 
-        // Here you can add the functionality to send the question to the backend and get the answer
-        // For example:
-        // fetch('http://172.0.0.1:18081/Chat', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ question: userInput })
-        // }).then(response => response.json())
-        // .then(data => {
-        //     console.log(data);
-        //     answerText.textContent = data.result;
-        //     console.log(data.result);
-        // }).catch(error => {
-        //     answerText.textContent = "发生错误，请重试。";
-        // });
     }
 });
-/*
 
-document.getElementById('add-model').addEventListener('click', function() {
-    const modelSection = document.getElementById('model-section');
-    
-    const modelBox = document.createElement('div');
-    modelBox.classList.add('model-box');
-    
-    const modelInput = document.createElement('input');
-    modelInput.type = 'text';
-    modelInput.value = '新模型';
-    modelInput.readOnly = true;
-    
-    const editButton = document.createElement('button');
-    editButton.textContent = '修改';
-    editButton.addEventListener('click', function() {
-        modelInput.readOnly = !modelInput.readOnly;
-        if (modelInput.readOnly) {
-            editButton.textContent = '修改';
-        } else {
-            editButton.textContent = '保存';
-        }
-    });
-    
-    modelBox.appendChild(modelInput);
-    modelBox.appendChild(editButton);
-    modelSection.appendChild(modelBox);
-});*/
 var chatBoxes = document.querySelectorAll('.chat-box');
 document.getElementById('add-conversation').addEventListener('click', function() {
     // 创建一个新的对话框元素
@@ -141,59 +100,6 @@ document.getElementById('add-conversation').addEventListener('click', function()
         })
     createChatBoxes("new_chat");
 });
-/*
-document.getElementById('send-button').addEventListener('click', function() {
-    var userInput = document.getElementById('user-input').value;
-    console.log(userInput);
-
-    const newQuestion = document.createElement('div');
-    newQuestion.classList.add('question');
-    
-    const questionText = document.createElement('p');
-    questionText.classList.add('question-text');
-    console.log(userInput);
-    questionText.textContent = userInput;
-    
-    const answerText = document.createElement('p');
-    answerText.classList.add('answer-text');
-    answerText.textContent = "请稍等，正在处理中...";
-    
-    newQuestion.appendChild(questionText);
-    newQuestion.appendChild(answerText);
-    
-    document.getElementById('chat-window').appendChild(newQuestion);
-    document.getElementById('user-input').value = '';    
-    
-    fetch('http://127.0.0.1:18081/Chat', {
-    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-    headers: {
-        'Content-Type': 'application/json',
-        // 根据需要添加其他headers
-    },
-    body: JSON.stringify({ message: {role: 'user',content: String(userInput)} })
-    })
-    .then(response => {
-        console.log(response.body.value);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-    })
-        
-        // Here you can add the functionality to send the question to the backend and get the answer
-        // For example:
-        // fetch('/api/getAnswer', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ question: userInput })
-        // }).then(response => response.json())
-        // .then(data => {
-        //     answerText.textContent = data.answer;
-        // }).catch(error => {
-        //     answerText.textContent = "发生错误，请重试。";
-        // });
-});*/
 
 function createChatBoxes(chatname) {
         var newChatBox = document.createElement('div');
@@ -256,12 +162,13 @@ function createChatBoxes(chatname) {
                             questionText.classList.add('question-text');
                             questionText.textContent = element.content;
                             const avatar_q = document.createElement('img');
-                            avatar_q.src = '../../human.jpg'; // 设置头像图片路径
+                            avatar_q.src = 'static/images/human.jpg'; // 设置头像图片路径
                             avatar_q.style.width = '50px'; // 设置宽度为50像素
                             avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
                             avatar_q.style.alignSelf = 'flex-end';
-                            newQuestion.appendChild(questionText);
+                            //newQuestion.appendChild(questionText);
                             newQuestion.appendChild(avatar_q);
+                            newQuestion.appendChild(questionText);
                             document.getElementById('chat-window').appendChild(newQuestion);
                         }
                         else
@@ -272,7 +179,7 @@ function createChatBoxes(chatname) {
                             answerText.classList.add('answer-text');
                             answerText.textContent = element.content;   
                             const avatar_a = document.createElement('img');
-                            avatar_a.src = '../../ai.jpg'; // 设置头像图片路径
+                            avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
                             avatar_a.style.width = '50px'; // 设置宽度为50像素
                             avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
                             newAnswer.appendChild(avatar_a);
