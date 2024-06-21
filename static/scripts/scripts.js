@@ -10,11 +10,11 @@ document.getElementById('send-button').addEventListener('click', function() {
         const newAnswer = document.createElement('div');
         newAnswer.classList.add('answer');
 
-        const questionText = document.createElement('p');
+        const questionText = document.createElement('div');
         questionText.classList.add('question-text');
         questionText.textContent = userInput;
         
-        const answerText = document.createElement('p');
+        const answerText = document.createElement('div');
         answerText.classList.add('answer-text');
         answerText.textContent = "请稍等，正在处理中...";
 
@@ -27,10 +27,10 @@ document.getElementById('send-button').addEventListener('click', function() {
         avatar_q.src = '../../human.jpg'; // 设置头像图片路径
         avatar_q.style.width = '50px'; // 设置宽度为50像素
         avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
-        avatar_q.style.alignSelf = 'flex-end';
+        
 
-        newQuestion.appendChild(questionText);
         newQuestion.appendChild(avatar_q);
+        newQuestion.appendChild(questionText);
         
         newAnswer.appendChild(avatar_a);
         newAnswer.appendChild(answerText);
@@ -62,7 +62,16 @@ document.getElementById('send-button').addEventListener('click', function() {
                 return response.json();
             }).then(data => {
                     console.log(data);
-                    answerText.textContent = data.result;
+                    
+                    let text = data.result;
+
+                    // 替换换行符和制表符
+                    text = text.replace(/\n/g, '<br>'); // 将换行符替换为 <br> 标签
+                    text = text.replace(/\t/g, '&emsp;'); // 将制表符替换为 HTML 实体或空格
+
+                    // 设置文本内容到 HTML 元素
+                    answerText.innerHTML = text;
+
             }).catch(error => {
                     answerText.textContent = "发生错误，请重试。"
                 })
