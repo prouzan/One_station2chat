@@ -228,7 +228,7 @@ main {
 }
 
 .question {
-    background-color: #f0f0f0; 
+    background-color: #ffffff; 
     padding: 10px;
     border-radius: 8px;
     width:auto;
@@ -241,7 +241,7 @@ main {
 }
 
 .answer {
-    background-color: #f0f0f0;
+    background-color: #ffffff; 
     padding: 10px;
     border-radius: 8px;
     width: auto;
@@ -259,7 +259,6 @@ main {
     border-radius: 8px;
     height: auto; /* 根据内容自动调整高度 */
     width: auto;
-    margin-bottom: 10px;
     white-space: pre-wrap;
 }
 

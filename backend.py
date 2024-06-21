@@ -44,7 +44,6 @@ class ChatFileManager():
         global current_chat_list
         global online_module_name
         global current_module_no
-        print("write "+ str(current_module_no))
         try:
             with open(self.path + online_module_name["online_module_name"][current_module_no] + ".dat", 'w') as file:
                 file.write(json.dumps(current_chat_list))
@@ -99,15 +98,12 @@ class WenXinYiYan():
     def communicate(self, context):
         url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie_speed?access_token=" + self.access_token
         payload = json.dumps({"messages": context})
-        print(payload)
         headers = {
             'Content-Type': 'application/json'
         }
         response = requests.request("POST", url, headers=headers, data=payload)
         if response.status_code == HTTPStatus.OK:
             data = response.json()
-            print(data)
-            print(data["result"])
             return data["result"]
         print("Wen communicate error")
         return None
@@ -129,7 +125,6 @@ class TongYiQianWen():
         dashscope.api_key = self.API_KEY
 
     def communicate(self, context):
-        print(context)
         response = dashscope.Generation.call(
             dashscope.Generation.Models.qwen_turbo,
             messages=context,
@@ -200,8 +195,8 @@ def change_current_module():
 @app.route('/change_current_chat', methods=['POST'])
 def change_current_chat():
     data = request.json
+    global current_chat_no
     if "current_chat_no" in data:
-        print(data["current_chat_no"])
         if int(data["current_chat_no"]) <= len(current_chat_list) - 1:
             current_chat_no = int(data["current_chat_no"])
             return current_chat_list[current_chat_no]##modify
@@ -215,11 +210,12 @@ def change_current_chat():
 
 @app.route('/Chat', methods=['POST'])
 def Chat():
+    global current_module_no
+    global current_chat_list
+    global current_chat_no
     data = request.json
     body = list(current_chat_list[current_chat_no]["message"])
     body.append(data["message"])
-    print(type(current_module_no))
-    print(current_module_no)
     if current_module_no == 0:
         result = local_Wen.communicate(body)
         if result:
@@ -296,7 +292,6 @@ def new_chat():
 def delete_chat():
     global current_chat_no
     data = request.json
-    print(data)
     if int(data["chat_no"]) >= len(current_chat_list):
         return "error"
     if current_chat_no > int(data["chat_no"]):
@@ -326,10 +321,17 @@ def modify_chat_name():
 @app.route('/modify_chat_content', methods=['POST'])
 def modify_chat_content():
     data = request.json
-    if int(data["chat_no"]) >= len(current_chat_list):
+    global current_chat_no
+    global current_chat_list
+    header = {
+        "Content-Type": "application/json"
+    }
+    if (2 * int(data["chat_no"]) + 1) >= len(current_chat_list[current_chat_no]["message"]):
         return "error"
-    current_chat_list[int(data["chat_no"])]["message"] = data["message"]
-    return "ok"
+    current_chat_list[current_chat_no]["message"] = current_chat_list[current_chat_no]["message"][0:(2 * int(data["chat_no"]))]
+    del data["chat_no"]
+    response = requests.post(url="http://127.0.0.1:18081/Chat", data=json.dumps(data), headers=header)
+    return response.json()
 # {
 #     "chat_no":"1"
 #     "message": [{"role":"","content":""}]
