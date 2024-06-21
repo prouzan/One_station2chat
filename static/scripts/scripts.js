@@ -1,4 +1,29 @@
 document.getElementById('send-button').addEventListener('click', function() {
+ Send_handle();
+});
+
+document.getElementById('user-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && !event.ctrlKey) {
+        event.preventDefault(); // 阻止默认的回车键行为，如换行或表单提交
+        Send_handle();
+      }
+
+    if (event.key === 'Enter' && event.ctrlKey) {
+        var input = document.getElementById('user-input');
+        var value = input.value;
+        var caretPosition = input.selectionStart;
+
+        // 插入换行符
+        input.value = value.substring(0, caretPosition) + '\n' + value.substring(caretPosition);
+
+        // 调整光标位置，使其保持在原来的行
+        input.selectionStart = input.selectionEnd = caretPosition + 1;
+
+        event.preventDefault(); // 阻止默认的换行行为
+      }
+   });
+
+function Send_handle(){
     const userInput = document.getElementById('user-input').value;
     console.log(userInput);
    
@@ -10,13 +35,13 @@ document.getElementById('send-button').addEventListener('click', function() {
         const newAnswer = document.createElement('div');
         newAnswer.classList.add('answer');
 
-        const questionText = document.createElement('div');
+        const questionText = document.createElement('p');
         questionText.classList.add('question-text');
         questionText.textContent = userInput;
         
-        const answerText = document.createElement('div');
+        const answerText = document.createElement('p');
         answerText.classList.add('answer-text');
-        answerText.textContent = "请稍等，正在处理中...";
+        answerText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 请稍等，正在处理中...';
 
         const avatar_a = document.createElement('img');
         //avatar_a.src = "{{ url_for('static', filename='images/ai.jpg') }}"; // 设置头像图片路径
@@ -65,21 +90,24 @@ document.getElementById('send-button').addEventListener('click', function() {
             }).then(data => {
                     console.log(data);
                     
-                    let text = data.result;
+                    // let text = data.result;
 
                     // 替换换行符和制表符
-                    text = text.replace(/\n/g, '<br>'); // 将换行符替换为 <br> 标签
-                    text = text.replace(/\t/g, '&emsp;'); // 将制表符替换为 HTML 实体或空格
+                    // text = text.replace(/</g, '&lt;'); //将尖括号转义
+                    // text = text.replace(/>/g, '&gt;');
+                    // text = text.replace(/\n/g, '<br>'); // 将换行符替换为 <br> 标签
+                    // text = text.replace(/\t/g, '&emsp;'); // 将制表符替换为 HTML 实体或空格
 
-                    // 设置文本内容到 HTML 元素
-                    answerText.innerHTML = text;
+                    // // 设置文本内容到 HTML 元素
+                    // answerText.innerHTML = text;
+                    answerText.textContent = data.result;
 
             }).catch(error => {
                     answerText.textContent = "发生错误，请重试。"
                 })
 
     }
-});
+};
 
 var chatBoxes = document.querySelectorAll('.chat-box');
 document.getElementById('add-conversation').addEventListener('click', function() {
@@ -100,6 +128,7 @@ document.getElementById('add-conversation').addEventListener('click', function()
         })
     createChatBoxes("new_chat");
 });
+
 
 function createChatBoxes(chatname) {
         var newChatBox = document.createElement('div');
@@ -165,7 +194,7 @@ function createChatBoxes(chatname) {
                             avatar_q.src = 'static/images/human.jpg'; // 设置头像图片路径
                             avatar_q.style.width = '50px'; // 设置宽度为50像素
                             avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
-                            avatar_q.style.alignSelf = 'flex-end';
+                            // avatar_q.style.alignSelf = 'flex-end';
                             //newQuestion.appendChild(questionText);
                             newQuestion.appendChild(avatar_q);
                             newQuestion.appendChild(questionText);

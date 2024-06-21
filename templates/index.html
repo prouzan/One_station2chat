@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One-stop Large Model Access Website</title>
     <link rel="stylesheet" href="/static/styles/styles.css">
+    <style>
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'); /* 使用CDN链接导入 */
+    </style>
+
 </head>
 <body>
     <script>
@@ -74,7 +78,7 @@
                             modelBoxes.forEach(function(box) {
                                 box.style.backgroundColor = '';
                             });
-                            this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';   //?
+                            this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue'; 
                             fetch('http://127.0.0.1:18081/change_current_module', {
                                 method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
                                 headers: {
