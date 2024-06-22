@@ -231,7 +231,7 @@ function send_handler(){
     }
 }
 
-document.getElementById('send-button').addEventListener('click', send_handler());
+
 document.getElementById('user-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && !event.ctrlKey) {
         event.preventDefault(); // 阻止默认的回车键行为，如换行或表单提交
@@ -253,6 +253,7 @@ document.getElementById('user-input').addEventListener('keydown', function(event
       }
    });
 
+document.getElementById('send-button').addEventListener('click', function(){send_handler()});
 
 var chatBoxes = document.querySelectorAll('.chat-box');
 document.getElementById('add-conversation').addEventListener('click', function() {
