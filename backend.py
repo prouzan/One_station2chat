@@ -213,6 +213,7 @@ def Chat():
     global current_module_no
     global current_chat_list
     global current_chat_no
+    global current_ask
     data = request.json
     body = list(current_chat_list[current_chat_no]["message"])
     body.append(data["message"])
@@ -244,16 +245,16 @@ def Chat():
         result = local_Gpt.communicate(body)
         if result:
             results["result"].append(result)
-            current_response.append({"role":"assistant","content": result})
+            current_response.append(result)
         result = local_Tong.communicate(body)
         if result:
             results["result"].append(result)
-            current_response.append({"role":"assistant","content": result})
+            current_response.append(result)
         result = local_Wen.communicate(body)
         if result:
             results["result"].append(result)
-            current_response.append({"role":"assistant","content": result})
-        current_ask.append(body)
+            current_response.append(result)
+        current_ask = data
         return results
     else:
         return "module not found"
@@ -273,8 +274,8 @@ def Choose_answer():
     global current_chat_no
     data = request.json
     if int(data["choice"]) <= len(current_response) - 1:
-        current_chat_list[current_chat_no].append(current_ask)
-        current_chat_list[current_chat_no].append({"role": "assistant", "content": current_response[int(data["choice"])]})
+        current_chat_list[current_chat_no]["message"].append(current_ask["message"])
+        current_chat_list[current_chat_no]["message"].append({"role": "assistant", "content": current_response[int(data["choice"])]})
         current_ask = {}
         current_response.clear()
         return "choose success"
@@ -347,6 +348,7 @@ online_module.append(local_Tong)
 local_Gpt = Chat_Gpt()
 online_module_name["online_module_name"].append("Chat-GPT 3.5")
 online_module.append(local_Tong)
+online_module_name["online_module_name"].append("综合大模型")
 local_chat_file_manager = ChatFileManager()
 if __name__ == "__main__":
     CORS(app)

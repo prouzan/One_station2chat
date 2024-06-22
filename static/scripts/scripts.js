@@ -133,10 +133,101 @@ function send_handler(){
 
                 // 设置文本内容到 HTML 元素
                 //answerText.innerHTML = text;
-                answerText.textContent = data.result;
+                
+                if(Array.isArray(data.result))
+                {
+                    var arrayLength = data.result.length;
+                    console.log("数组的长度是:", arrayLength);
+
+                    // 遍历数组元素
+                    data.result.forEach(function(item, index) {
+                        console.log("元素索引:", index, "元素值:", item);
+                        if(index == 0)
+                        {
+                            answerText.textContent = item;
+                            answerText.dataset.index = index;
+                            answerText.addEventListener('dblclick', function(){
+                                fetch('http://127.0.0.1:18081/Choose_answer', {
+                                    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        // 根据需要添加其他headers
+                                    },
+                                    body: JSON.stringify({ choice: String(this.dataset.index) })
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response;
+                                    }).then(data=>{
+                                        var nextele = newAnswer.nextSibling;
+                                        while(nextele)
+                                        {
+                                            var tmp = nextele.nextSibling;
+                                            nextele.remove();
+                                            nextele = tmp;
+                                        }
+                                    })
+                            })
+                        }
+                        else
+                        {
+                            const newAns = document.createElement('div');
+                            newAns.classList.add('answer');
+                            const ansText = document.createElement('p');
+                            ansText.classList.add('answer-text');
+                            //answerText.textContent = "请稍等，正在处理中...";
+                            ansText.textContent = item;
+                            ansText.dataset.index = index;
+                            const avatar_a = document.createElement('img');
+                            //avatar_a.src = "{{ url_for('static', filename='images/ai.jpg') }}"; // 设置头像图片路径
+                            avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
+                            avatar_a.style.width = '50px'; // 设置宽度为50像素
+                            avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
+                            newAns.appendChild(avatar_a);
+                            newAns.appendChild(ansText);
+                            ansText.addEventListener('dblclick', function(){
+                                fetch('http://127.0.0.1:18081/Choose_answer', {
+                                    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        // 根据需要添加其他headers
+                                    },
+                                    body: JSON.stringify({ choice: String(this.dataset.index) })
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response;
+                                    }).then(data=>{
+                                        var nextele = newAnswer;
+                                        while(nextele)
+                                        {
+                                            var tmp = nextele.nextSibling;
+                                            if(nextele.lastChild.dataset.index != this.dataset.index)
+                                            {
+                                                nextele.remove();
+                                            }
+                                            nextele = tmp;
+                                        }
+                                    })
+                            })
+                        document.getElementById('chat-window').appendChild(newAns);
+                        }
+                        // 在这里你可以访问每个数组元素，变量 item 是当前遍历到的元素
+                    });
+                }
+                else
+                {
+                    answerText.textContent = data.result;
+                }
+                console.log(data.result);
             }).catch(error => {
                 answerText.textContent = "发生错误，请重试。"
             })
+
     }
 }
 
