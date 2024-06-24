@@ -8,125 +8,126 @@
     <style>
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'); /* 使用CDN链接导入 */
     </style>
-
+ <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <script>
         function display_online_module() {
-            var online_module_name; 
-            fetch('http://127.0.0.1:18081/get_online_module_name', {
-            method: 'GET', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-            headers: {
-                'Content-Type': 'application/json',
-                // 根据需要添加其他headers
-            },
-            // 如果是POST请求，可能需要添加请求体
-            // body: JSON.stringify({ key: 'value' })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // 处理返回的数据
-                online_module_name = data.online_module_name;
-                console.log(online_module_name);
-                console.log("2");
-                // 获取sidebar-section1元素的引用
-                var sidebarSection1 = document.querySelector('.sidebar-section1');
-                var titleElement = sidebarSection1.querySelector('h2');
-                var firstModelBox = titleElement.nextElementSibling;
-
-                var sidebarSection2 = document.querySelector('.sidebar-section2');
-                var titleElement2 = sidebarSection2.querySelector('button');
-
-                var chat_window = document.querySelector('#chat-window');
-
-                // 清空sidebar-section1中现有的内容
-                while (firstModelBox) {
-                    var nextElement = firstModelBox.nextElementSibling;
-                    sidebarSection1.removeChild(firstModelBox);
-                    firstModelBox = nextElement;
-                }
-                console.log("3");
-                // 检查online_module_name是否已经定义并且是一个数组
-                console.log(Array.isArray(online_module_name));
-                if (Array.isArray(online_module_name)) {
-                    // 遍历online_module_name数组
-                    console.log("4");
-                    var modelBoxes = [];
-                    online_module_name.forEach(function(name, index) {
-                        // 创建一个新的model-box元素
-                        console.log("1");
-                        var modelBox = document.createElement('div');
-                        modelBox.classList.add('model-box');
-
-                        //var m_button = document.createElement('button');
-                        //m_button.textContent = name;
-                        // 将标题和按钮添加到model-box中
-                        //modelBox.appendChild(m_button);
-
-                        var title = document.createElement('h2');
-                        title.textContent = name;
-                        modelBox.appendChild(title);
-
-                        modelBox.addEventListener('click', function() {
-                            var index = modelBoxes.indexOf(this);
-                            // 切换背景颜色
-                            modelBoxes.forEach(function(box) {
-                                box.style.backgroundColor = '';
-                            });
-                            this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';   //?
-                            fetch('http://127.0.0.1:18081/change_current_module', {
-                                method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    // 根据需要添加其他headers
-                                },
-                                body: JSON.stringify({ current_module_no: String(index) })
-                                })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                    return response.json();
-                                }).then(data =>{
-                                        chat_data = data.current_chat_list;
-                                        // 清空sidebar-section2中现有的内容
-                                        var firstChatBox = titleElement2.nextElementSibling;
-                                        while (firstChatBox) {
-                                        var nextElement = firstChatBox.nextElementSibling;
-                                        sidebarSection2.removeChild(firstChatBox);
-                                        firstChatBox = nextElement;
-
-                                        var firstChatwinele = chat_window.firstChild;
-                                        while (firstChatwinele) {
-                                        var nextEle = firstChatwinele.nextElementSibling;
-                                        chat_window.removeChild(firstChatwinele);
-                                        firstChatwinele = nextEle;
-                                    }
-                                    }
-                                    console.log(chat_data);
-                                    chat_data.forEach(chat => {
-                                        createChatBoxes(chat.chat_name);
-                                    })
-                                })
-                        });
-
-                        // 将model-box添加到sidebar-section1中
-                        sidebarSection1.appendChild(modelBox);
-                        modelBoxes.push(modelBox);
-                    });
-            }
-                // 这里可以调用函数来更新页面或执行其他逻辑
-            })
-            .catch(error => {
-                // 处理请求错误
-                console.error('Fetch error:', error);
-            });
+    var online_module_name; 
+    fetch('http://127.0.0.1:18081/get_online_module_name', {
+    method: 'GET', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+    headers: {
+        'Content-Type': 'application/json',
+        // 根据需要添加其他headers
+    },
+    // 如果是POST请求，可能需要添加请求体
+    // body: JSON.stringify({ key: 'value' })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        return response.json();
+    })
+    .then(data => {
+        // 处理返回的数据
+        online_module_name = data.online_module_name;
+        console.log(online_module_name);
+        console.log("2");
+        // 获取sidebar-section1元素的引用
+        var sidebarSection1 = document.querySelector('.sidebar-section1');
+        var titleElement = sidebarSection1.querySelector('h2');
+        var firstModelBox = titleElement.nextElementSibling;
+
+        var sidebarSection2 = document.querySelector('.sidebar-section2');
+        var titleElement2 = sidebarSection2.querySelector('button');
+
+        var chat_window = document.querySelector('#chat-window');
+
+        // 清空sidebar-section1中现有的内容
+        while (firstModelBox) {
+            var nextElement = firstModelBox.nextElementSibling;
+            sidebarSection1.removeChild(firstModelBox);
+            firstModelBox = nextElement;
+        }
+        console.log("3");
+        // 检查online_module_name是否已经定义并且是一个数组
+        console.log(Array.isArray(online_module_name));
+        if (Array.isArray(online_module_name)) {
+            // 遍历online_module_name数组
+            console.log("4");
+            var modelBoxes = [];
+            online_module_name.forEach(function(name, index) {
+                // 创建一个新的model-box元素
+                console.log("1");
+                var modelBox = document.createElement('div');
+                modelBox.classList.add('model-box');
+
+                //var m_button = document.createElement('button');
+                //m_button.textContent = name;
+                // 将标题和按钮添加到model-box中
+                //modelBox.appendChild(m_button);
+
+                var title = document.createElement('h2');
+                title.textContent = name;
+                modelBox.appendChild(title);
+
+                modelBox.addEventListener('click', function() {
+                    var index = modelBoxes.indexOf(this);
+                    // 切换背景颜色
+                    modelBoxes.forEach(function(box) {
+                        box.style.backgroundColor = '';
+                    });
+                    this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';   //?
+                    fetch('http://127.0.0.1:18081/change_current_module', {
+                        method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 根据需要添加其他headers
+                        },
+                        body: JSON.stringify({ current_module_no: String(index) })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        }).then(data =>{
+                                chat_data = data.current_chat_list;
+                                // 清空sidebar-section2中现有的内容
+                                var firstChatBox = titleElement2.nextElementSibling;
+                                while (firstChatBox) {
+                                var nextElement = firstChatBox.nextElementSibling;
+                                sidebarSection2.removeChild(firstChatBox);
+                                firstChatBox = nextElement;
+
+                                var firstChatwinele = chat_window.firstChild;
+                                while (firstChatwinele) {
+                                var nextEle = firstChatwinele.nextElementSibling;
+                                chat_window.removeChild(firstChatwinele);
+                                firstChatwinele = nextEle;
+                            }
+                            }
+                            console.log(chat_data);
+                            chat_data.forEach(chat => {
+                                createChatBoxes(chat.chat_name);
+                            })
+                        })
+                });
+
+                // 将model-box添加到sidebar-section1中
+                sidebarSection1.appendChild(modelBox);
+                modelBoxes.push(modelBox);
+            });
+    }
+        // 这里可以调用函数来更新页面或执行其他逻辑
+    })
+    .catch(error => {
+        // 处理请求错误
+        console.error('Fetch error:', error);
+    });
+}
+
     </script>
     <div class="container">
         <aside class="sidebar">
@@ -153,11 +154,8 @@
             </section>
         </main>
     </div>
-
-   
-
 <script>
-    display_online_module()
+    display_online_module();
 </script>
     <script src="/static/scripts/scripts.js"></script>
 </body>

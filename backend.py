@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template
+from flask import Flask, request, render_template
 import requests
 import json
 from http import HTTPStatus
@@ -6,6 +6,7 @@ import dashscope
 import openai
 from flask_cors import CORS
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 app = Flask(__name__)
 online_module_name = {"online_module_name": []}
 online_module = []
@@ -14,7 +15,7 @@ current_module_no = 0
 current_chat_no = 0
 current_chat_list = []
 current_ask = {}
-current_response = []
+current_response = ["","",""]
 '''[
     {
         "chat_name":"chat_1",
@@ -240,22 +241,37 @@ def Chat():
         return "connection error"
     elif current_module_no == 3:
         results = {
-            "result": []
+            "result": ["", "", ""]
         }
-        result = local_Gpt.communicate(body)
-        if result:
-            results["result"].append(result)
-            current_response.append(result)
-        result = local_Tong.communicate(body)
-        if result:
-            results["result"].append(result)
-            current_response.append(result)
-        result = local_Wen.communicate(body)
-        if result:
-            results["result"].append(result)
-            current_response.append(result)
+        # result = local_Gpt.communicate(body)
+        future_to_index = {}
         current_ask = data
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_index[executor.submit(local_Gpt.communicate, body)] = 2
+            future_to_index[executor.submit(local_Tong.communicate, body)] = 1
+            future_to_index[executor.submit(local_Wen.communicate, body)] = 0
+            for future in as_completed(future_to_index):
+                index = future_to_index[future]
+                result = future.result()
+                if result:
+                    results["result"][index] = result
+                    current_response[index] = result
         return results
+
+#        if result:
+#            results["result"].append(result)
+#            current_response.append(result)
+#        result = local_Tong.communicate(body)
+#       if result:
+#            results["result"].append(result)
+#            current_response.append(result)
+#        result = local_Wen.communicate(body)
+#        if result:
+#            results["result"].append(result)
+#            current_response.append(result)
+#        current_ask = data
+        
+
     else:
         return "module not found"
 # {
@@ -278,6 +294,9 @@ def Choose_answer():
         current_chat_list[current_chat_no]["message"].append({"role": "assistant", "content": current_response[int(data["choice"])]})
         current_ask = {}
         current_response.clear()
+        current_response.append("")
+        current_response.append("")
+        current_response.append("")
         return "choose success"
     return "choose failed"
 # {"choice" : "0"}
@@ -324,6 +343,8 @@ def modify_chat_content():
     data = request.json
     global current_chat_no
     global current_chat_list
+    global current_module_no
+    global current_ask
     header = {
         "Content-Type": "application/json"
     }
@@ -332,6 +353,8 @@ def modify_chat_content():
     current_chat_list[current_chat_no]["message"] = current_chat_list[current_chat_no]["message"][0:(2 * int(data["chat_no"]))]
     del data["chat_no"]
     response = requests.post(url="http://127.0.0.1:18081/Chat", data=json.dumps(data), headers=header)
+    if current_module_no == 3:
+        current_ask = data
     return response.json()
 # {
 #     "chat_no":"1"
