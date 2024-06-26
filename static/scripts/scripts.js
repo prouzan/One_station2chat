@@ -443,7 +443,7 @@ function createChatBoxes(chatname) {
 
                             var chatwinIndex = Array.from(document.querySelectorAll('.question')).length;
                             newQuestion.dataset.index = chatwinIndex;
-
+                            
                             const questionText = document.createElement('p');
                             questionText.classList.add('question-text');
                             questionText.textContent = element.content;
@@ -530,6 +530,8 @@ function createChatBoxes(chatname) {
                                                 console.log("元素索引:", index, "元素值:", item);
                                                 if(index == 0)
                                                 {
+                                                    var answerText = nextanswer.lastChild;
+                                                    console.log(answerText);
                                                     answerText.innerHTML = marked.parse(item);
                                                     answerText.dataset.index = index;
                                                     answerText.addEventListener('dblclick', function(){
@@ -547,7 +549,7 @@ function createChatBoxes(chatname) {
                                                                 }
                                                                 return response;
                                                             }).then(data=>{
-                                                                var nextele = newAnswer.nextSibling;
+                                                                var nextele = nextanswer.nextSibling;
                                                                 while(nextele)
                                                                 {
                                                                     var tmp = nextele.nextSibling;
