@@ -1,6 +1,7 @@
 let inputenable = 0;
+let operateenale = 1;
 
-
+// 交互、修改
 function send_handler(){
     const userInput = document.getElementById('user-input').value;
     if (userInput.trim() !== "") {
@@ -231,6 +232,7 @@ function send_handler(){
                 
                 if(Array.isArray(data.result))
                 {
+                    operateenale = 0;  // 多个结果时，必须要选择回答之后才能继续提问
                     var arrayLength = data.result.length;
                     console.log("数组的长度是:", arrayLength);
 
@@ -264,6 +266,7 @@ function send_handler(){
                                             nextele = tmp;
                                         }
                                     })
+                                    operateenale = 1;
                             })
                         }
                         else
@@ -308,6 +311,7 @@ function send_handler(){
                                             nextele = tmp;
                                         }
                                     })
+                                    operateenale = 1;
                             })
                         document.getElementById('chat-window').appendChild(newAns);
                         }
@@ -329,9 +333,15 @@ function send_handler(){
 }
 
 
+
+
+                
+
+
+
 document.getElementById('user-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter' && !event.ctrlKey) {
-        if(inputenable == 0){
+        if(inputenable == 0 || operateenale ==0){
             showToast();
         }
         else{
@@ -356,11 +366,11 @@ document.getElementById('user-input').addEventListener('keydown', function(event
    });
 
 document.getElementById('send-button').addEventListener('click', function(){
-    if(inputenable == 0){
-    showToast();
+    if(inputenable == 0 || operateenale ==0){
+        showToast();
 }
-else{
-    send_handler()
+    else{
+        send_handler()
 }
 });
 
@@ -383,6 +393,8 @@ document.getElementById('add-conversation').addEventListener('click', function()
     createChatBoxes("new_chat");
 });
 
+
+// 创建、修改、删除、重新加载
 function createChatBoxes(chatname) {
         var newChatBox = document.createElement('div');
         newChatBox.classList.add('chat-box');
@@ -394,6 +406,7 @@ function createChatBoxes(chatname) {
         newChatBox.appendChild(title);
         const inputBox = document.getElementById('user-input');
         title.addEventListener('click', function() {
+            operateenale = 1;
             inputenable = 1;
             var clickedIndex = this.parentNode.dataset.index;
             chatBoxes.forEach(function(box) {
@@ -524,7 +537,7 @@ function createChatBoxes(chatname) {
                                         {
                                             var arrayLength = data.result.length;
                                             console.log("数组的长度是:", arrayLength);
-
+                                            operateenale = 0;
                                             // 遍历数组元素
                                             data.result.forEach(function(item, index) {
                                                 console.log("元素索引:", index, "元素值:", item);
@@ -555,6 +568,7 @@ function createChatBoxes(chatname) {
                                                                     nextele = tmp;
                                                                 }
                                                             })
+                                                        operateenale = 1;    
                                                     })
                                                 }
                                                 else
@@ -599,6 +613,7 @@ function createChatBoxes(chatname) {
                                                                     nextele = tmp;
                                                                 }
                                                             })
+                                                        operateenale = 1;
                                                     })
                                                 document.getElementById('chat-window').appendChild(newAns);
                                                 }
@@ -727,6 +742,15 @@ function createChatBoxes(chatname) {
                 }
                 newChatBox.remove(); 
                 })
+
+                // 删除聊天界面中的内容，并设置inputenable为0
+                var chatwin = document.getElementById('chat-window');
+                var chatwin_children = chatwin.firstChild;
+                while(chatwin_children) {
+                    chatwin.removeChild(chatwin_children);
+                    chatwin_children = chatwin.firstChild;
+                } 
+                inputenable = 0;
         });
         title.appendChild(closeButton);
         // // 添加关闭按钮
@@ -740,5 +764,7 @@ function createChatBoxes(chatname) {
 }
 
 function showToast() {
-    alert('请选择模型和对话！');
+    if(inputenable == 0){alert('请选择模型和对话！');}
+    if(operateenale == 0){alert('请选择回答！');}
+    
 }
