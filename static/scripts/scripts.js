@@ -90,7 +90,7 @@ function send_handler(){
                             {
                                 answerText.innerHTML = marked.parse(item);
                                 answerText.dataset.index = index;
-                                answerText.addEventListener('dblclick', function(){
+                                /*answerText.addEventListener('dblclick', function(){
                                     fetch('http://127.0.0.1:18081/Choose_answer', {
                                         method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
                                         headers: {
@@ -113,7 +113,7 @@ function send_handler(){
                                                 nextele = tmp;
                                             }
                                         })
-                                })
+                                })*/
                             }
                             else
                             {
