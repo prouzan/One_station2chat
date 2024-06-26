@@ -1,24 +1,203 @@
 let inputenable = 0;
 let operateenale = 1;
 
+// 封装创建聊天元素的函数
+function createChatElement(elementType, className, content, options) {
+    const element = document.createElement(elementType);
+    element.classList.add(className);
+    if (content) {
+        const textElement = document.createElement('p');
+        textElement.classList.add('text-content');
+        textElement.textContent = content;
+        element.appendChild(textElement);
+    }
+    if (options) {
+        Object.keys(options).forEach(key => {
+            element[key] = options[key];
+        });
+    }
+    return element;
+}
+
+function Set_answer_dblclick(answerText, newAnswer)
+{
+    answerText.addEventListener('dblclick', function(){
+        fetch('http://127.0.0.1:18081/Choose_answer', {
+            method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+            headers: {
+                'Content-Type': 'application/json',
+                // 根据需要添加其他headers
+            },
+            body: JSON.stringify({ choice: String(this.dataset.index) })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response;
+            }).then(data=>{
+                var nextele = newAnswer.nextSibling;
+                while(nextele)
+                {
+                    var tmp = nextele.nextSibling;
+                    nextele.remove();
+                    nextele = tmp;
+                }
+            })
+    })
+}
+
+function Choose_answer(data, answerText, newAnswer)
+{
+    var arrayLength = data.result.length;
+    console.log("数组的长度是:", arrayLength);
+
+    // 遍历数组元素
+    data.result.forEach(function(item, index) {
+        console.log("元素索引:", index, "元素值:", item);
+        if(index == 0)
+        {
+            console.log(answerText);
+            answerText.innerHTML = marked.parse(item);
+            answerText.dataset.index = index;
+            Set_answer_dblclick(answerText, newAnswer);
+        }
+        else
+        {
+            const newAns = document.createElement('div');
+            newAns.classList.add('answer');
+            const ansText = document.createElement('p');
+            ansText.classList.add('answer-text');
+            //answerText.textContent = "请稍等，正在处理中...";
+            ansText.innerHTML = marked.parse(item);
+            ansText.dataset.index = index;
+            const avatar_a = document.createElement('img');
+            //avatar_a.src = "{{ url_for('static', filename='images/ai.jpg') }}"; // 设置头像图片路径
+            avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
+            avatar_a.style.width = '50px'; // 设置宽度为50像素
+            avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
+            newAns.appendChild(avatar_a);
+            newAns.appendChild(ansText);
+            Set_answer_dblclick(ansText, newAnswer);
+            document.getElementById('chat-window').appendChild(newAns);
+        }
+        // 在这里你可以访问每个数组元素，变量 item 是当前遍历到的元素
+    });
+}
+
+function modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle)
+{
+    fetch('http://127.0.0.1:18081/modify_chat_content', {
+        method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+        headers: {
+            'Content-Type': 'application/json',
+            // 根据需要添加其他headers
+        },
+        body: JSON.stringify({ chat_no: String(dbclickedIndex) , message:{role: 'user',content: newTitle} })
+        })
+        .then(response => {
+            if (!response.ok) {
+                nextanswer.lastChild.textContent = "network error";
+                throw new Error('Network response was not ok');
+            }
+            return response.json();            
+        }).then(data=>{
+            if(Array.isArray(data.result))
+            {
+                Choose_answer(data, answerText, nextanswer);
+            }
+            else
+            {
+                nextanswer.lastChild.innerHTML = marked.parse(data.result);
+            }
+            var container1 = document.getElementById('chat-window');
+            container1.scrollTop = container1.scrollHeight;
+        }).catch(error => {
+            answerText.textContent = "发生错误，请重试。"
+        });
+}
+
+function modify_chat_name()
+{
+
+}
+
+//1.双击chat块的标题时，修改标题内容并向后端提交修改后的标题内容
+//2.双击提问块时，修改提问内容并向后端提交修改后的标题内容
+function replace_text(newQuestion, questionText, func)
+{
+        var originalTitle = questionText.textContent;
+        var dbclickedIndex = questionText.parentNode.dataset.index;
+        var titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.value = originalTitle; // 设置输入框的初始值为h2的文本
+        titleInput.style.width = questionText.offsetWidth + 'px'; // 设置输入框的宽度与h2相同
+        titleInput.style.margin = '0'; // 重置边距
+        titleInput.style.padding = '0'; // 重置内边距
+        titleInput.style.backgroundColor = 'gray';
+        titleInput.style.color = "white";
+        // 替换h2标签为输入框
+        questionText.replaceWith(titleInput);
+        titleInput.focus();
+        var newTitle;
+        // 为输入框添加失去焦点事件，更新标题
+        titleInput.addEventListener('blur', function() {
+            // 更新h2标签的内容为输入框的值
+            newTitle = titleInput.value.trim();
+            if (newTitle) {
+                questionText.textContent = newTitle;
+            }
+            else {
+                questionText.textContent = originalTitle;
+            }
+            // 重新将输入框替换为h2标签
+            // 检查 newChatBox 是否至少有一个子节点
+            newQuestion.appendChild(questionText);
+            titleInput.style.display = 'none';
+            titleInput.value = ''; // 清空输入框
+        });
+        // 为输入框添加键盘事件，以便在按下Enter键时更新标题
+        titleInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+            var chatwin = document.getElementById('chat-window');
+            var Index = 2 * dbclickedIndex + 1;
+            var nextanswer = chatwin.children[Index];
+            nextanswer.lastChild.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 请稍等，正在处理中...';
+            // 确保 startIndex 是有效的
+            if (Index >= 0 && Index < chatwin.children.length) {
+                // 从 startIndex 开始删除所有子元素
+                for (var i = chatwin.children.length - 1; i > Index; i--) {
+                    chatwin.removeChild(chatwin.children[i]);
+                }
+            }
+            event.preventDefault(); // 阻止表单提交默认行为
+            titleInput.blur(); // 触发失去焦点事件，更新标题
+            var answerText = nextanswer.lastChild;
+            if(func == 'modify_chat_content')
+                modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle);
+            else if(func == 'modify_chat_name')
+                modify_chat_name();
+            }
+        })
+            
+}
+
 // 交互、修改
 function send_handler(){
     const userInput = document.getElementById('user-input').value;
     if (userInput.trim() !== "") {
-        const newQuestion = document.createElement('div');
-        newQuestion.classList.add('question');
+        const newQuestion = createChatElement('div', 'question', userInput);
+        const newAnswer = createChatElement('div', 'answer');
         var chatwinIndex = Array.from(document.querySelectorAll('.question')).length;
         newQuestion.dataset.index = chatwinIndex;
 
-        const newAnswer = document.createElement('div');
-        newAnswer.classList.add('answer');
-        const questionText = document.createElement('p');
-        questionText.classList.add('question-text');
-        questionText.textContent = userInput;
+        var questionTexts = newQuestion.getElementsByTagName('p');
+        const questionText = questionTexts[0];
+
         questionText.addEventListener('dblclick', function(){
-            
-            var originalTitle = questionText.textContent;
-            var dbclickedIndex = this.parentNode.dataset.index;
+            replace_text(newQuestion, questionText, 'modify_chat_content');
+            /*var originalTitle = questionText.textContent;
+            var dbclickedIndex = this.parentNode.dataset.index; 
             var titleInput = document.createElement('input');
             titleInput.type = 'text';
             titleInput.value = originalTitle; // 设置输入框的初始值为h2的文本
@@ -172,7 +351,7 @@ function send_handler(){
                     answerText.textContent = "发生错误，请重试。"
                 });
                 }
-            });
+            });*/
         })
         const answerText = document.createElement('p');
         answerText.classList.add('answer-text');
@@ -604,7 +783,7 @@ function createChatBoxes(chatname) {
                                                                 }
                                                                 return response;
                                                             }).then(data=>{
-                                                                var nextele = newAnswer;
+                                                                var nextele = nextanswer;
                                                                 while(nextele)
                                                                 {
                                                                     var tmp = nextele.nextSibling;

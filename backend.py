@@ -290,6 +290,7 @@ def Choose_answer():
     global current_chat_no
     data = request.json
     if int(data["choice"]) <= len(current_response) - 1:
+        print(current_ask)
         current_chat_list[current_chat_no]["message"].append(current_ask["message"])
         current_chat_list[current_chat_no]["message"].append({"role": "assistant", "content": current_response[int(data["choice"])]})
         current_ask = {}
