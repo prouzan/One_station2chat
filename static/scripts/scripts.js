@@ -186,7 +186,18 @@ function replace_text(newQuestion, questionText, func)
             }
             // 重新将输入框替换为h2标签
             // 检查 newChatBox 是否至少有一个子节点
-            newQuestion.appendChild(questionText);
+            if(func == 'modify_chat_content')
+                newQuestion.appendChild(questionText);
+            else if(func == 'modify_chat_name')
+            {
+                if (newQuestion.firstChild) {
+                    // 将 title 插入到第一个子节点之前
+                    newQuestion.insertBefore(questionText, newQuestion.firstChild);
+                } else {
+                    // 如果 newChatBox 没有子节点，就直接添加 title
+                    newQuestion.appendChild(questionText);
+                }
+            }
             titleInput.style.display = 'none';
             titleInput.value = ''; // 清空输入框
         });
