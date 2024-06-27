@@ -1,3 +1,5 @@
 1、多模型未选择回答时禁止一切操作（done:多回答时，未选择回答则不能继续提问）
 2、reload的时候修改先前对话会有问题（done）
 3、删除chatbox时对话内容仍存在（finished）
+4、inputenable设置的有问题(finished)
+5、删除聊天框时会无差别清空(finished)
