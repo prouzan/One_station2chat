@@ -1,5 +1,8 @@
 let inputenable = 0;
 let operateenale = 1;
+var switchenable = 1;
+var clickedIndex
+
 
 // 封装创建聊天元素的函数
 function createChatElement(elementType, className, content, options) {
@@ -67,7 +70,7 @@ function Set_answer_dblclick(answerText, newAnswer, index)
 }
 
 
-function Choose_answer(data, answerText, newAnswer, chat_flag)
+function Choose_answer(data, answerText, newAnswer, chat_flag, reload)
 {
     var arrayLength = data.result.length;
     console.log("数组的长度是:", arrayLength);
@@ -80,7 +83,7 @@ function Choose_answer(data, answerText, newAnswer, chat_flag)
             console.log(answerText);
             answerText.innerHTML = marked.parse(item);
             answerText.dataset.index = index;
-            if(chat_flag)
+            if(chat_flag || reload == true)
                 Set_answer_dblclick(answerText, newAnswer, index);
         }
         else
@@ -106,7 +109,7 @@ function Choose_answer(data, answerText, newAnswer, chat_flag)
     });
 }
 
-function modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle)
+function modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle, reload)
 {
     fetch('http://127.0.0.1:18081/modify_chat_content', {
         method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
@@ -126,7 +129,7 @@ function modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle)
             if(Array.isArray(data.result))
             {
                 operateenale = 0;
-                Choose_answer(data, answerText, nextanswer, false);
+                Choose_answer(data, answerText, nextanswer, false, reload);
             }
             else
             {
@@ -134,6 +137,7 @@ function modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle)
             }
             var container1 = document.getElementById('chat-window');
             container1.scrollTop = container1.scrollHeight;
+            switchenable = 1;
         }).catch(error => {
             answerText.textContent = "发生错误，请重试。"
         });
@@ -158,7 +162,7 @@ function modify_chat_name(dbclickedIndex, newTitle)
 
 //1.双击chat块的标题时，修改标题内容并向后端提交修改后的标题内容
 //2.双击提问块时，修改提问内容并向后端提交修改后的标题内容
-function replace_text(newQuestion, questionText, func)
+function replace_text(newQuestion, questionText, func, reload)
 {
         var originalTitle = questionText.textContent;
         var dbclickedIndex = questionText.parentNode.dataset.index;
@@ -211,6 +215,7 @@ function replace_text(newQuestion, questionText, func)
                     var chatwin = document.getElementById('chat-window');
                     var Index = 2 * dbclickedIndex + 1;
                     var nextanswer = chatwin.children[Index];
+                    switchenable = 0;
                     nextanswer.lastChild.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 请稍等，正在处理中...';
                     // 确保 startIndex 是有效的
                     if (Index >= 0 && Index < chatwin.children.length) {
@@ -220,7 +225,7 @@ function replace_text(newQuestion, questionText, func)
                         }
                     }
                     var answerText = nextanswer.lastChild;
-                    modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle);
+                    modify_chat_content(nextanswer, answerText, dbclickedIndex, newTitle, reload);
                 }
             
             else if(func == 'modify_chat_name')
@@ -243,11 +248,15 @@ function send_handler(){
         const questionText = questionTexts[0];
 
         questionText.addEventListener('dblclick', function(){
-            replace_text(newQuestion, questionText, 'modify_chat_content');
+            if(operateenale == 0)
+                showToast();
+            else
+                replace_text(newQuestion, questionText, 'modify_chat_content', false);
         })
         const answerText = document.createElement('p');
         answerText.classList.add('answer-text');
         //answerText.textContent = "请稍等，正在处理中...";
+        switchenable = 0;
         answerText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 请稍等，正在处理中...';
         const avatar_a = document.createElement('img');
         avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
@@ -303,6 +312,7 @@ function send_handler(){
                 }
                 console.log(data.result);
                 container1.scrollTop = container1.scrollHeight;
+                switchenable = 1;
             }).catch(error => {
                 answerText.textContent = "发生错误，请重试。"
             })
@@ -379,90 +389,99 @@ function createChatBoxes(chatname) {
         newChatBox.appendChild(title);
         const inputBox = document.getElementById('user-input');
         title.addEventListener('click', function() {
-            operateenale = 1;
-            inputenable = 1;
-            var clickedIndex = this.parentNode.dataset.index;
-            chatBoxes.forEach(function(box) {
-                box.style.backgroundColor = '';
-                // 如果 box 包含标题按钮，则也重置标题按钮的背景颜色
-                var titleButton = box.querySelector('button');
-                if (titleButton) {
-                    console.log("has button")
-                    titleButton.style.backgroundColor = '';
-                }
-                var titletxt = box.querySelector('h2');
-                if (titletxt) {
-                    console.log("has txt")
-                    titletxt.style.backgroundColor = '';
-                }
-            });
-            this.style.backgroundColor = 'gray';
-            newChatBox.style.backgroundColor = 'gray';
-            this.parentNode.lastChild.style.backgroundColor = 'gray';
-            fetch('http://127.0.0.1:18081/change_current_chat', {
-                method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-                headers: {
-                    'Content-Type': 'application/json',
-                    // 根据需要添加其他headers
-                },
-                body: JSON.stringify({ current_chat_no: String(clickedIndex) })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+            if(switchenable == 0)
+                showToast();
+            else
+            {
+                operateenale = 1;
+                inputenable = 1;
+                clickedIndex = this.parentNode.dataset.index;
+                chatBoxes.forEach(function(box) {
+                    box.style.backgroundColor = '';
+                    // 如果 box 包含标题按钮，则也重置标题按钮的背景颜色
+                    var titleButton = box.querySelector('button');
+                    if (titleButton) {
+                        console.log("has button")
+                        titleButton.style.backgroundColor = '';
                     }
-                    var chat_window = document.querySelector('#chat-window');
-                    var firstChatwinele = chat_window.firstChild;
-                    while (firstChatwinele) {
-                    var nextEle = firstChatwinele.nextElementSibling;
-                    chat_window.removeChild(firstChatwinele);
-                    firstChatwinele = nextEle;
-                }
-                return response.json();
-                })
-                .then(data=>{
-                    console.log(data.message);
-                    data.message.forEach(element => {  
-                        if (element.role == 'user'){
-                            const newQuestion = createChatElement('div', 'question', element.content);
-
-                            var chatwinIndex = Array.from(document.querySelectorAll('.question')).length;
-                            newQuestion.dataset.index = chatwinIndex;
-                            
-                            var questionTexts = newQuestion.getElementsByTagName('p');
-                            const questionText = questionTexts[0];
-
-                            const avatar_q = document.createElement('img');
-                            avatar_q.src = 'static/images/human.jpg'; // 设置头像图片路径
-                            avatar_q.style.width = '50px'; // 设置宽度为50像素
-                            avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
-                            newQuestion.appendChild(avatar_q);
-                            newQuestion.appendChild(questionText);
-
-                            questionText.addEventListener('dblclick', function(){
-                                replace_text(newQuestion, questionText, 'modify_chat_content');
-                            })
-                            document.getElementById('chat-window').appendChild(newQuestion);
+                    var titletxt = box.querySelector('h2');
+                    if (titletxt) {
+                        console.log("has txt")
+                        titletxt.style.backgroundColor = '';
+                    }
+                });
+                this.style.backgroundColor = 'gray';
+                newChatBox.style.backgroundColor = 'gray';
+                this.parentNode.lastChild.style.backgroundColor = 'gray';
+                fetch('http://127.0.0.1:18081/change_current_chat', {
+                    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 根据需要添加其他headers
+                    },
+                    body: JSON.stringify({ current_chat_no: String(clickedIndex) })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
-                        else
-                        {
-                            const newAnswer = document.createElement('div');
-                            newAnswer.classList.add('answer'); 
-                            const answerText = document.createElement('p');
-                            answerText.classList.add('answer-text');
-                            answerText.innerHTML = marked.parse(element.content);   
-                            const avatar_a = document.createElement('img');
-                            avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
-                            avatar_a.style.width = '50px'; // 设置宽度为50像素
-                            avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
-                            newAnswer.appendChild(avatar_a);
-                            newAnswer.appendChild(answerText);
-                            document.getElementById('chat-window').appendChild(newAnswer);
-                        }
-                        var container1 = document.getElementById('chat-window');
-                        container1.scrollTop = container1.scrollHeight;
-                    });
-                })
+                        var chat_window = document.querySelector('#chat-window');
+                        var firstChatwinele = chat_window.firstChild;
+                        while (firstChatwinele) {
+                        var nextEle = firstChatwinele.nextElementSibling;
+                        chat_window.removeChild(firstChatwinele);
+                        firstChatwinele = nextEle;
+                    }
+                    return response.json();
+                    })
+                    .then(data=>{
+                        console.log(data.message);
+                        data.message.forEach(element => {  
+                            if (element.role == 'user'){
+                                const newQuestion = createChatElement('div', 'question', element.content);
+
+                                var chatwinIndex = Array.from(document.querySelectorAll('.question')).length;
+                                newQuestion.dataset.index = chatwinIndex;
+                                
+                                var questionTexts = newQuestion.getElementsByTagName('p');
+                                const questionText = questionTexts[0];
+
+                                const avatar_q = document.createElement('img');
+                                avatar_q.src = 'static/images/human.jpg'; // 设置头像图片路径
+                                avatar_q.style.width = '50px'; // 设置宽度为50像素
+                                avatar_q.style.height = '50px'; // 高度自动调整，保持宽高比
+                                newQuestion.appendChild(avatar_q);
+                                newQuestion.appendChild(questionText);
+
+                                questionText.addEventListener('dblclick', function(){
+                                    if(operateenale == 0)
+                                        showToast();
+                                    else
+                                        replace_text(newQuestion, questionText, 'modify_chat_content', true);
+                                })
+                                document.getElementById('chat-window').appendChild(newQuestion);
+                            }
+                            else
+                            {
+                                const newAnswer = document.createElement('div');
+                                newAnswer.classList.add('answer'); 
+                                const answerText = document.createElement('p');
+                                answerText.classList.add('answer-text');
+                                answerText.innerHTML = marked.parse(element.content);   
+                                const avatar_a = document.createElement('img');
+                                avatar_a.src = 'static/images/ai.jpg'; // 设置头像图片路径
+                                avatar_a.style.width = '50px'; // 设置宽度为50像素
+                                avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
+                                newAnswer.appendChild(avatar_a);
+                                newAnswer.appendChild(answerText);
+                                document.getElementById('chat-window').appendChild(newAnswer);
+                            }
+                            var container1 = document.getElementById('chat-window');
+                            container1.scrollTop = container1.scrollHeight;
+                        });
+                    })
+            }
+            
         });
     
         // 为chat-box添加双击事件监听器
@@ -475,40 +494,43 @@ function createChatBoxes(chatname) {
         closeButton.textContent = '×';
         
         closeButton.addEventListener('click', function() {
-            var closedIndex = this.parentNode.dataset.index;
-            console.log(this.parentNode.dataset.index);
-            fetch('http://127.0.0.1:18081/delete_chat', {
-                method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-                headers: {
-                    'Content-Type': 'application/json',
-                    // 根据需要添加其他headers
-                },
-                body: JSON.stringify({ chat_no: String(closedIndex) })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+            if(switchenable == 0)
+                showToast();
+            else
+            {
+                var closedIndex = this.parentNode.dataset.index;
+                console.log(this.parentNode.dataset.index);
+                fetch('http://127.0.0.1:18081/delete_chat', {
+                    method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 根据需要添加其他headers
+                    },
+                    body: JSON.stringify({ chat_no: String(closedIndex) })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                    var nextchatbox = newChatBox.nextSibling;
+                    while(nextchatbox){
+                        nextchatbox.dataset.index = nextchatbox.dataset.index - 1;
+                        nextchatbox = nextchatbox.nextSibling;
                     }
-                var nextchatbox = newChatBox.nextSibling;
-                while(nextchatbox){
-                    nextchatbox.dataset.index = nextchatbox.dataset.index - 1;
-                    nextchatbox = nextchatbox.nextSibling;
-                }
-                newChatBox.remove(); 
-                })
+                    newChatBox.remove(); 
+                    })
 
-                if(clickedIndex == closedIndex){
-                    // 删除聊天界面中的内容，并设置inputenable为0
-                    var chatwin = document.getElementById('chat-window');
-                    var chatwin_children = chatwin.firstChild;
-                    while(chatwin_children) {
-                        chatwin.removeChild(chatwin_children);
-                        chatwin_children = chatwin.firstChild;
-                    } 
-                    inputenable = 0;
-                }
-                
-                
+                    if(clickedIndex == closedIndex){
+                        // 删除聊天界面中的内容，并设置inputenable为0
+                        var chatwin = document.getElementById('chat-window');
+                        var chatwin_children = chatwin.firstChild;
+                        while(chatwin_children) {
+                            chatwin.removeChild(chatwin_children);
+                            chatwin_children = chatwin.firstChild;
+                        } 
+                        inputenable = 0;
+                    }
+            }
         });
         title.appendChild(closeButton);
         // // 添加关闭按钮
@@ -522,5 +544,5 @@ function createChatBoxes(chatname) {
 function showToast() {
     if(inputenable == 0){alert('请选择模型和对话！');}
     if(operateenale == 0){alert('请选择回答！');}
-    
+    if(switchenable == 0){alert('请等待回答完成！');}
 }

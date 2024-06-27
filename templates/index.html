@@ -73,47 +73,52 @@
                 modelBox.appendChild(title);
 
                 modelBox.addEventListener('click', function() {
-                    var index = modelBoxes.indexOf(this);
-                    // 切换背景颜色
-                    modelBoxes.forEach(function(box) {
-                        box.style.backgroundColor = '';
-                    });
-                    this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';   //?
-                    fetch('http://127.0.0.1:18081/change_current_module', {
-                        method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // 根据需要添加其他headers
-                        },
-                        body: JSON.stringify({ current_module_no: String(index) })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        }).then(data =>{
-                                chat_data = data.current_chat_list;
-                                // 清空sidebar-section2中现有的内容
-                                var firstChatBox = titleElement2.nextElementSibling;
-                                while (firstChatBox) {
-                                var nextElement = firstChatBox.nextElementSibling;
-                                sidebarSection2.removeChild(firstChatBox);
-                                firstChatBox = nextElement;
-
-                                var firstChatwinele = chat_window.firstChild;
-                                while (firstChatwinele) {
-                                var nextEle = firstChatwinele.nextElementSibling;
-                                chat_window.removeChild(firstChatwinele);
-                                firstChatwinele = nextEle;
-                            }
-                            }
-                            console.log(chat_data);
-                            chat_data.forEach(chat => {
-                                createChatBoxes(chat.chat_name);
+                    if(switchenable == 0)
+                        showToast();
+                    else{
+                        var index = modelBoxes.indexOf(this);
+                        // 切换背景颜色
+                        modelBoxes.forEach(function(box) {
+                            box.style.backgroundColor = '';
+                        });
+                        this.style.backgroundColor = this.style.backgroundColor ? '' : 'lightblue';   //?
+                        fetch('http://127.0.0.1:18081/change_current_module', {
+                            method: 'POST', // 假设这是一个GET请求，根据实际情况可能需要设置为POST或其他
+                            headers: {
+                                'Content-Type': 'application/json',
+                                // 根据需要添加其他headers
+                            },
+                            body: JSON.stringify({ current_module_no: String(index) })
                             })
-                        })
-                        inputenable = 0;
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            }).then(data =>{
+                                    chat_data = data.current_chat_list;
+                                    // 清空sidebar-section2中现有的内容
+                                    var firstChatBox = titleElement2.nextElementSibling;
+                                    while (firstChatBox) {
+                                    var nextElement = firstChatBox.nextElementSibling;
+                                    sidebarSection2.removeChild(firstChatBox);
+                                    firstChatBox = nextElement;
+
+                                    var firstChatwinele = chat_window.firstChild;
+                                    while (firstChatwinele) {
+                                    var nextEle = firstChatwinele.nextElementSibling;
+                                    chat_window.removeChild(firstChatwinele);
+                                    firstChatwinele = nextEle;
+                                }
+                                }
+                                console.log(chat_data);
+                                chat_data.forEach(chat => {
+                                    createChatBoxes(chat.chat_name);
+                                })
+                            })
+                            inputenable = 0;
+                        }
+
                 });
 
                 // 将model-box添加到sidebar-section1中
@@ -155,9 +160,9 @@
             </section>
         </main>
     </div>
+<script src="/static/scripts/scripts.js"></script>
 <script>
     display_online_module();
 </script>
-    <script src="/static/scripts/scripts.js"></script>
 </body>
 </html>
