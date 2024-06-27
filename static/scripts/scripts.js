@@ -486,14 +486,18 @@ function createChatBoxes(chatname) {
                 newChatBox.remove(); 
                 })
 
-                // 删除聊天界面中的内容，并设置inputenable为0
-                var chatwin = document.getElementById('chat-window');
-                var chatwin_children = chatwin.firstChild;
-                while(chatwin_children) {
-                    chatwin.removeChild(chatwin_children);
-                    chatwin_children = chatwin.firstChild;
-                } 
-                inputenable = 0;
+                if(clickedIndex == closedIndex){
+                    // 删除聊天界面中的内容，并设置inputenable为0
+                    var chatwin = document.getElementById('chat-window');
+                    var chatwin_children = chatwin.firstChild;
+                    while(chatwin_children) {
+                        chatwin.removeChild(chatwin_children);
+                        chatwin_children = chatwin.firstChild;
+                    } 
+                    inputenable = 0;
+                }
+                
+                
         });
         title.appendChild(closeButton);
         // // 添加关闭按钮
