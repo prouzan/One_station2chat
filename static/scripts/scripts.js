@@ -81,9 +81,9 @@ function Choose_answer(data, answerText, newAnswer, chat_flag, reload)
         if(index == 0)
         {
             console.log(answerText);
-            answerText.innerHTML = marked.parse(item);
+            answerText.innerHTML = item ? marked.parse(item) : "模型返回错误";
             answerText.dataset.index = index;
-            if(chat_flag || reload == true)
+            if((chat_flag || reload == true) && item)
                 Set_answer_dblclick(answerText, newAnswer, index);
         }
         else
@@ -93,7 +93,7 @@ function Choose_answer(data, answerText, newAnswer, chat_flag, reload)
             const ansText = document.createElement('p');
             ansText.classList.add('answer-text');
             //answerText.textContent = "请稍等，正在处理中...";
-            ansText.innerHTML = marked.parse(item);
+            ansText.innerHTML = item ? marked.parse(item) : "模型返回错误";
             ansText.dataset.index = index;
             const avatar_a = document.createElement('img');
             //avatar_a.src = "{{ url_for('static', filename='images/ai.jpg') }}"; // 设置头像图片路径
@@ -102,7 +102,8 @@ function Choose_answer(data, answerText, newAnswer, chat_flag, reload)
             avatar_a.style.height = '50px'; // 高度自动调整，保持宽高比
             newAns.appendChild(avatar_a);
             newAns.appendChild(ansText);
-            Set_answer_dblclick(ansText, newAnswer, index);
+            if(item)
+                Set_answer_dblclick(ansText, newAnswer, index);
             document.getElementById('chat-window').appendChild(newAns);
         }
         // 在这里你可以访问每个数组元素，变量 item 是当前遍历到的元素
@@ -207,7 +208,7 @@ function replace_text(newQuestion, questionText, func, reload)
         });
         // 为输入框添加键盘事件，以便在按下Enter键时更新标题
         titleInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && titleInput.value) {
                 event.preventDefault(); // 阻止表单提交默认行为
                 titleInput.blur(); // 触发失去焦点事件，更新标题
                 if(func == 'modify_chat_content')
@@ -248,7 +249,7 @@ function send_handler(){
         const questionText = questionTexts[0];
 
         questionText.addEventListener('dblclick', function(){
-            if(operateenale == 0)
+            if(operateenale == 0 || switchenable == 0)
                 showToast();
             else
                 replace_text(newQuestion, questionText, 'modify_chat_content', false);
@@ -454,7 +455,7 @@ function createChatBoxes(chatname) {
                                 newQuestion.appendChild(questionText);
 
                                 questionText.addEventListener('dblclick', function(){
-                                    if(operateenale == 0)
+                                    if(operateenale == 0 || switchenable == 0)
                                         showToast();
                                     else
                                         replace_text(newQuestion, questionText, 'modify_chat_content', true);
