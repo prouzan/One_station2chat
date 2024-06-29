@@ -73,9 +73,9 @@ class ChatFileManager():
 
 class WenXinYiYan():
     def __init__(self):
-        self.AppID = "78848100"
-        self.API_Key = "xZ8BXWfzZIyJJvd77Qmoor5l"
-        self.Secret_Key = "lnIycOoLZUp30dX4rv8SDwNHFg3gDW9Y"
+        self.AppID = "请输入自己申请的appid"
+        self.API_Key = "请输入自己申请的api-key"
+        self.Secret_Key = "请输入自己申请的密钥"
         self.access_token = self.access_token()
 
     def access_token(self):
@@ -122,7 +122,7 @@ class WenXinYiYan():
 
 class TongYiQianWen():
     def __init__(self):
-        self.API_KEY = "sk-26eff9ebff744891b28dfd656393cc8c"
+        self.API_KEY = "请输入自己的API-KEY"
         dashscope.api_key = self.API_KEY
 
     def communicate(self, context):
@@ -146,7 +146,7 @@ class TongYiQianWen():
 
 class Chat_Gpt():
     def __init__(self):
-        self.API_KEY = "sk-Vj7ofie7XFbQu1SzCbE91b1f8a1e4802818d43Fb20CbEf0d"
+        self.API_KEY = "请输入自己的API-KEY"
 
     def communicate(self, context):
         openai.api_key = self.API_KEY
@@ -288,17 +288,21 @@ def Choose_answer():
     global current_response
     global current_chat_list
     global current_chat_no
-    data = request.json
-    if int(data["choice"]) <= len(current_response) - 1:
-        current_chat_list[current_chat_no]["message"].append(current_ask["message"])
-        current_chat_list[current_chat_no]["message"].append({"role": "assistant", "content": current_response[int(data["choice"])]})
-        current_ask = {}
-        current_response.clear()
-        current_response.append("")
-        current_response.append("")
-        current_response.append("")
-        return "choose success"
-    return "choose failed"
+    if current_ask != {}:
+        data = request.json
+        if int(data["choice"]) <= len(current_response) - 1:
+            print(current_ask)
+            current_chat_list[current_chat_no]["message"].append(current_ask["message"])
+            current_chat_list[current_chat_no]["message"].append({"role": "assistant", "content": current_response[int(data["choice"])]})
+            current_ask = {}
+            current_response.clear()
+            current_response.append("")
+            current_response.append("")
+            current_response.append("")
+            return "choose success"
+        return "choose failed"
+    else:
+        return "ok"
 # {"choice" : "0"}
 
 
